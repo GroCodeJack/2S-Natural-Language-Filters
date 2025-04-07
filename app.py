@@ -42,6 +42,9 @@ def get_url_from_llm(user_query: str) -> str:
         return ""
 
 def scrape_2ndswing(url: str):
+    import requests
+    from bs4 import BeautifulSoup
+
     headers = {"User-Agent": "Mozilla/5.0"}
     try:
         r = requests.get(url, headers=headers, timeout=10)
@@ -51,15 +54,53 @@ def scrape_2ndswing(url: str):
         all_data = []
 
         for p in products:
+            # IMAGE
             img_tag = p.find("img", class_="product-image-photo")
             img_url = img_tag["src"] if img_tag else ""
 
+            # BRAND
             brand_div = p.find("div", class_="product-brand")
             brand = brand_div.get_text(strip=True) if brand_div else "N/A"
 
+            # MODEL
+            # (Single used clubs often have .pmp-product-category;
+            #  Parent models might have .p-title instead.)
             model_div = p.find("div", class_="pmp-product-category")
-            model = model_div.get_text(strip=True) if model_div else "N/A"
+            if model_div:
+                model = model_div.get_text(strip=True)
+            else:
+                title_div = p.find("div", class_="p-title")
+                model = title_div.get_text(strip=True) if title_div else "N/A"
 
+            # URL
+            # Typically in <a class="product photo product-item-photo" href="...">
+            link_tag = p.select_one("a.product.photo.product-item-photo")
+            product_url = link_tag["href"] if link_tag else ""
+
+            # Check if new-configurable parent or single used
+            is_parent_model = (
+                p.get("data-itemhasused") == "1"
+                and p.get("data-hasnewvariants") == "1"
+            )
+
+            if is_parent_model:
+                # For parent model, show minimal info in your final UI
+                all_data.append({
+                    "brand": brand,
+                    "model": model,
+                    "img_url": img_url,
+                    "url": product_url,
+                    "price": None,
+                    "condition": None,
+                    "dexterity": None,
+                    "loft": None,
+                    "flex": None,
+                    "shaft": None,
+                    "parent_model": True
+                })
+                continue
+
+            # If it's a single used club, parse all details
             price_div = p.find("div", class_="current-price")
             price = price_div.get_text(strip=True) if price_div else "N/A"
 
@@ -81,7 +122,7 @@ def scrape_2ndswing(url: str):
                     value = span.next_sibling
                     while value and getattr(value, "name", None) == "br":
                         value = value.next_sibling
-                    
+
                     value_str = "N/A"
                     if value:
                         if isinstance(value, str):
@@ -89,31 +130,38 @@ def scrape_2ndswing(url: str):
                         else:
                             value_str = value.get_text(strip=True)
 
-                    if label.lower() == "dexterity":
+                    label_lower = label.lower()
+                    if label_lower == "dexterity":
                         dexterity = value_str
-                    elif label.lower() == "loft":
+                    elif label_lower == "loft":
                         loft = value_str
-                    elif label.lower() == "flex":
+                    elif label_lower == "flex":
                         flex = value_str
-                    elif label.lower() == "shaft":
+                    elif label_lower == "shaft":
                         shaft = value_str
 
             all_data.append({
                 "brand": brand,
                 "model": model,
-                "price": price,
                 "img_url": img_url,
+                "url": product_url,
+                "price": price,
                 "condition": condition,
                 "dexterity": dexterity,
                 "loft": loft,
                 "flex": flex,
-                "shaft": shaft
+                "shaft": shaft,
+                "parent_model": False
             })
 
         return all_data
+
     except Exception as e:
         print("Scrape error:", e)
         return []
+
+
+
 
 #####################
 # SINGLE ROUTE
@@ -165,69 +213,71 @@ HTML_TEMPLATE = """
 <html lang="en">
 <head>
     <title>Natural Language Golf Search</title>
+    <!-- Make mobile screens behave properly -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
+        /* GLOBAL RESET */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 2em;
             position: relative;
+            font-size: 16px;
         }
+
+        /* FORM AREA */
         form { 
-            margin-bottom: 2em; 
+            margin-bottom: 1em; /* We'll add extra spacing below */
             display: flex; 
             flex-direction: column; 
             gap: 1em;
             max-width: 600px;
+            margin: 0 auto; /* centers the form on larger screens */
         }
         .search-textarea {
             width: 100%;
-            min-height: 100px; 
-            padding: 0.5em;
+            max-width: 100%;  /* ensures no overflow on mobile */
+            min-height: 100px;
+            padding: 0.8em;
             border-radius: 8px;
             border: 1px solid #ccc;
             resize: vertical;
+            font-size: 1em;
         }
         .search-button {
-            padding: 0.6em 1em;
+            padding: 0.7em 1.2em;
             border: none;
             border-radius: 8px;
             background-color: #b71c1c;
             color: #fff;
             cursor: pointer;
-            font-size: 1em;
-            width: 150px;
+            font-size: 1.1em;
+            width: 160px;
+            align-self: center;
         }
         .search-button:hover {
             background-color: #9a1616;
         }
 
-        .generated-url {
-            width: 100%;
-            word-wrap: break-word;        /* old fallback */
-            overflow-wrap: break-word;    /* standard property */
-            white-space: normal;          /* ensure wrapping is allowed */
-        }
-
-            .generated-url a {
-            text-decoration: none; 
-            color: #0066cc;               /* or whatever color you want */
-            word-wrap: break-word;        
-            overflow-wrap: break-word;    
-            white-space: normal;
-        }
-
-
-        /* LOADING SPINNER OVERLAY */
+        /* SPINNER OVERLAY */
         #spinner-overlay {
-            display: none;
+            display: none; /* hidden by default */
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-color: rgba(255, 255, 255, 0.7);
             z-index: 9999;
         }
         #spinner {
             position: absolute;
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
         }
@@ -240,18 +290,26 @@ HTML_TEMPLATE = """
             font-weight: bold;
         }
 
+        /* PRODUCT RESULTS */
         .product-grid {
-            display: flex; 
-            flex-wrap: wrap;
+            display: grid;
+            /* We want auto‐fitting columns of at least 220px, but no more than 4 columns total */
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1em;           /* spacing between columns/rows */
+            max-width: 1000px;  /* ensures at most ~4 columns fit */
+            margin: 0 auto;     /* center grid within the page */
+            justify-items: center; /* optional, center tiles horizontally in their cells */
         }
+
         .tile {
+            /* No need for fixed width; let grid handle it */
             border: 1px solid #ccc;
             border-radius: 6px;
             padding: 1em;
-            margin: 1em;
-            width: 250px;
             text-align: center;
+            background-color: #fff;
         }
+
         .tile img {
             max-width: 100%;
             height: auto;
@@ -267,73 +325,108 @@ HTML_TEMPLATE = """
             color: #444;
         }
 
+        /* MAKE THE GENERATED URL WRAP & HAVE SPACE ABOVE IT */
+        .generated-url {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            margin: 2em auto 2em auto; /* 2em top margin for space, auto horizontally */
+            max-width: 600px;         /* keep it from going edge to edge on large screens */
+        }
+
+        .generated-url a {
+            color: #b71c1c;
+            text-decoration: none; /* remove underlines if you'd like */
+        }
+
+        .generated-url a:hover {
+            text-decoration: underline;
+        }
+
+        /* MOBILE RESPONSIVENESS */
         @media (max-width: 600px) {
-            .product-grid {
-                flex-direction: column;
-                align-items: center;
+            body {
+                font-size: 18px; /* bigger text on smaller screens */
+                margin: 1em;
             }
             .tile {
-                width: 90%;
+                width: 90%; /* tile goes full width on small screens */
             }
         }
     </style>
+
     <script>
+        // Show the spinner overlay when user submits the form
         function showSpinner() {
             document.getElementById('spinner-overlay').style.display = 'block';
         }
     </script>
 </head>
 <body>
-    <h1>Natural Language Golf Search</h1>
+    <h1 style="text-align:center;">Natural Language Golf Search</h1>
 
+    <!-- LOADING SPINNER -->
     <div id="spinner-overlay">
-      <div id="spinner">
-        <img src="https://media.giphy.com/media/3oz8xIsloV7zOmt81G/giphy.gif" alt="Loading...">
-        <p>Loading...</p>
-      </div>
+        <div id="spinner">
+            <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTN1bmc2d2o1dnM5dXBuNzNncmxqYTN0NDFydXVybGQ3cTRvYnhqNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sSgvbe1m3n93G/giphy.gif" alt="Loading...">
+            <p>Loading...</p>
+        </div>
     </div>
 
-    <!-- Single form for everything -->
+    <!-- YOUR FORM -->
     <form method="POST" onsubmit="showSpinner()">
-        <label for="user_query">Enter Your Search:</label>
-        <textarea 
-            id="user_query" 
-            name="user_query" 
+        <label for="user_query" style="font-weight:bold;">Enter Your Search:</label>
+        <textarea
+            id="user_query"
+            name="user_query"
             class="search-textarea"
             placeholder="e.g. Titleist left-handed driver regular flex under $400"
         >{{ user_query }}</textarea>
-
         <button type="submit" class="search-button">Search</button>
     </form>
 
+    <!-- WRAPPED URL WITH SPACING ABOVE -->
     {% if generated_url %}
         <div class="generated-url">
             <strong>Generated URL:</strong>
-        <a href="{{ generated_url }}" target="_blank">{{ generated_url }}</a>
-    </div>
+            <a href="{{ generated_url }}" target="_blank">{{ generated_url }}</a>
+        </div>
     {% endif %}
 
+    <!-- PRODUCT GRID -->
     {% if products and products|length > 0 %}
         <div class="product-grid">
-        {% for product in products %}
-            <div class="tile">
-                <img src="{{ product.img_url }}" alt="Product Image">
-                <h3>{{ product.brand }} {{ product.model }}</h3>
-                <div class="price-text">{{ product.price }}</div>
-                <div class="attr">
-                    <p>Condition: {{ product.condition }}</p>
-                    <p>Dexterity: {{ product.dexterity }}</p>
-                    <p>Loft: {{ product.loft }}</p>
-                    <p>Flex: {{ product.flex }}</p>
-                    <p>Shaft: {{ product.shaft }}</p>
+            {% for product in products %}
+                <div class="tile">
+                    <a href="{{ product.url }}" target="_blank" style="text-decoration: none; color: inherit;">
+                        <img src="{{ product.img_url }}" alt="Product Image">
+                        <h3>{{ product.brand }} {{ product.model }}</h3>
+
+                        {% if product.parent_model %}
+                            <!-- If it's a parent model, just show "PARENT MODEL" -->
+                            <div class="attr">
+                                <p>PARENT MODEL</p>
+                            </div>
+                        {% else %}
+                            <!-- Single used club: show price and attributes -->
+                            <div class="price-text">{{ product.price }}</div>
+                            <div class="attr">
+                                <p>Condition: {{ product.condition }}</p>
+                                <p>Dexterity: {{ product.dexterity }}</p>
+                                <p>Loft: {{ product.loft }}</p>
+                                <p>Flex: {{ product.flex }}</p>
+                                <p>Shaft: {{ product.shaft }}</p>
+                            </div>
+                        {% endif %}
+                    </a>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
         </div>
     {% endif %}
 </body>
 </html>
 """
+
 
 if __name__ == "__main__":
     # Run locally
