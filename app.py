@@ -29,7 +29,7 @@ This URL should act as an example for how to build URLs when certain filters are
 def get_url_from_llm(user_query: str) -> str:
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # or "gpt-3.5-turbo"
+            model="gpt-4o",  # or "gpt-3.5-turbo"
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_query}
