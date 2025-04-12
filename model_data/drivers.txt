@@ -1,0 +1,754 @@
+TSR2
+G430 MAX
+TSR3
+TSi3
+TSi2
+G430 LST
+G430 MAX 10K
+Qi10 LS
+G425 Max
+ST-X 230
+Stealth Plus
+G430 SFT
+Darkspeed LS
+Paradym
+TSR1
+Big Bertha 23
+Qi10
+Mavrik
+ST-Z 230
+TSR4
+G410 Plus
+Paradym Ai Smoke TD
+Paradym Ai Smoke Max
+M6
+G425 LST
+ST-MAX 230
+Paradym Triple Diamond
+Dark Speed X
+SIM MAX
+Qi10 MAX
+TSi1
+Rogue
+Paradym Ai Smoke Max D
+TSi4
+TS3
+M4
+Stealth 2
+EPIC Flash
+Paradym X
+917 D2
+TS2
+GT2
+Mavrik Sub Zero
+EPIC Speed
+G400
+Rogue ST Max
+GT3
+GBB Epic
+G25
+Rogue ST Max LS
+Stealth 2 Plus
+ST-G
+M3
+G30
+Mavrik Max
+12
+SIM
+2016 M1
+G410 LS Tec
+EPIC Max
+2016 M2
+M5
+Darkspeed Max
+0311 GEN5
+ZX5 MK II
+Burner Superfast 2.0
+G440 MAX
+915 D2
+EPIC Max LS
+Dynapwr TI
+Stealth
+Rogue ST Triple Diamond LS
+0311 XF GEN5
+Prodi G
+ZX5 LS MK II
+SLDR
+0811 X GEN4
+Rogue ST Max Draw
+R11
+R11s
+Rogue Draw
+SIM2
+Big Bertha B21
+Dynapwr Carbon
+RocketBallz
+G400 Max
+EPIC Flash Sub Zero
+0311 Black OPS
+M2
+XR 16
+KING F9 Speedback
+Stealth 2 HD
+Paradym Ai Smoke Max Fast
+Burner Superfast
+2007 Burner 460
+G30 SF Tec
+917 D3
+G440 LST
+2023 Air X Offset
+G400 SF Tec
+Big Bertha REVA 23
+XR
+Hot Launch E523
+SIM MAX-D
+2021 0211
+G20
+R1
+2015 Great Big Bertha
+Rogue Sub Zero
+Launcher XL2
+Aerojet
+RocketBallz Stage 2
+G425 SFT
+ZX7 MK II
+G10
+RAD Speed XB
+Aerojet LS
+910 D2
+G5
+0311 XF GEN6
+2016 G
+SIM2 MAX
+2016 G SF Tec
+G410 SF Tec
+R7 460
+915 D3
+G400 LS Tec
+M6 D-Type
+913 D2
+0311 GEN6
+M4 D-Type
+Qi35
+G15
+0811 XF GEN4
+M1
+Qi35 LS
+AeroBurner
+Launcher HB Turbo
+ST-Z
+ST-X 230 PLTNM
+2014 Big Bertha
+2022 X
+Elyte
+Launcher XL
+G30 LS Tec
+X2 Hot
+G LE 2
+KING SpeedZone
+Razr X Black
+TS1
+Darkspeed Max Womens
+King F6
+R9 SuperTri
+R9 460
+2016 Big Bertha Fusion
+0811 X Proto
+Stealth HD
+Exotics C723
+VRS Covert 2.0
+910 D3
+2016 G LS Tec
+X 460
+GT4
+M2 D-Type
+Hibore XL
+Rapture
+R7 Draw
+R9
+RAD Speed
+Great Big Bertha 23
+Exotics E723
+GBB Epic Sub Zero
+K15
+Vapor Speed
+913 D3
+Hot Launch C523
+2023 Air X Straight Neck
+Qi35 MAX
+R15
+MAX
+0811 XF Gen2
+R7 Superquad
+Big Bertha Titanium 454
+2009 Burner
+Big Bertha Diablo
+Jetspeed
+KING SpeedZone Xtreme
+RAD Speed XD
+Launcher XL Lite
+ST-G 220
+Hot Launch E524
+0311 Black OPS Tour-1
+ST190
+Big Bertha V Series
+Hot Launch C522
+2022 0211
+2023 Air X Womens
+Elyte Triple Diamond
+XR 16 Pro
+Vapor Fly
+Launcher HB
+AMP
+G2
+R5 Dual
+905 R
+Tour Burner
+Sasquatch Dymo
+X
+ST-X 220
+G440 SFT
+Fly-Z +
+RocketBallz Stage 2 Bonded
+King F7
+Razr Fit
+0811X
+ST 180
+M5 Tour
+0811 X Gen2
+Hyper X
+R1 Black
+R7 425
+Eleven
+EPIC MAX Star
+Exotics E722
+Prime 12
+I20
+Launcher 460
+Exotics EXS 220
+Big Bertha REVA Womens
+Hot Launch C524
+13
+DS-ADAPT X
+Big Bertha Alpha 815
+Fly-Z XL
+Razr Fit Xtreme
+XTD Ti
+FT-9
+2013 X Hot
+VR S Covert
+Anser
+909 D2
+907 D2
+EPIC Flash Star
+ST200
+ST-X
+Kalea Premier
+Aerojet MAX
+Paradym Star
+Launcher XL2 Draw
+R15 Black
+RocketBallz Tour
+I25
+R580 XD
+905 T
+SLDR Mini
+TS4
+EPIC Speed LS Triple Diamond
+LTDx
+King LTD
+Classic 270
+RocketBallz Black
+X-Metal
+M Speed Offset
+R580
+Rapture V2
+VR S Covert Tour
+2014 Big Bertha Alpha
+Hibore
+Hibore XLS
+F-Max Offset
+SIM2 MAX-D
+ZX5
+Exotics C721
+DS-ADAPT MAX-K
+i15
+Diablo Octane
+Fly-Z
+Aeroburner Black
+G LE
+King F8
+R7 CGB Max
+2008 Speed LD F
+Kalea Ladies
+XR Speed
+F-MAX Airspeed Offset
+ZX7
+ST-Z 220
+12 Ladies
+849D
+ZXi LS
+Big Bertha Alpha 816 DBD
+EPIC Star
+Z585
+Serene
+AMP Cell Blue
+G10 Draw
+MX-500
+SS 350 Offset
+R7 Quad
+Speed LD M Offset
+Big Bertha 460
+2007 Burner Draw
+2008 Big Bertha Ladies
+SLDR 430
+FT-i
+2008 Speed LD M OS
+909 D3
+0811 X Plus Proto
+300 Mini
+Launcher XL Lite Draw
+LTDx Max
+G LE 3
+ZXi
+Elyte Mini
+M1 430
+9
+0811XF
+RocketBallz Fixed Hosel
+F Speed
+Ignite 460
+Sasquatch Machspeed
+FT-iQ
+2007 Burner 460 TP
+Burner Superfast 2.0 TP
+Burner HT
+Speed LD F
+Fly-XL Mens
+0811 XT GEN4
+Air X Offset
+DS-ADAPT LS
+GT1
+FT-iZ
+S3
+Vapor Pro
+XR Pro
+2015 Rhapsody
+Big Bertha 1.5 Mini
+M1 440
+King F8 Plus
+Z785
+F-Max Superlite
+SZ 440
+Bio Cell Black
+X2 Hot Pro
+Rhapsody
+983 K
+AMP Offset
+FT-5
+2004 Big Bertha
+Vapor Fly Pro
+VRS Covert 2.0 Tour
+Air X
+LTDx LS
+13 Womens
+ZXi MAX
+AeroBurner TP
+D200
+Z 565
+Long Tom
+F-Max Superlite Offset
+AMP Cell Red
+2008 Speed LD M
+Sasquatch Sumo
+Launcher DST
+Razrhawk
+R11 TP
+2013 X Hot Pro
+Classic XL
+Speedline Super S
+588 Custom
+X Hot 19
+Launch Pad
+Persimmon
+G430 HL MAX
+2025 HiBore XL
+2025 HiBore XL Lite
+Elyte X
+S2
+Faith
+2015 CG Black
+Vapor Flex
+2015 Blue
+King F6 Plus
+Z 765
+King F7 Plus
+Speedline Tech
+AMP Cell Silver
+AMP Cell Pro Silver
+R1 TP
+Bio Cell Silver
+Sasquatch 460 Tour
+Sasquatch Sumo 5000
+SS 427
+S9-1 M OS
+SZ 460
+2012 CG Black
+454 Composite
+JPX 900
+Z 545
+M Gloire
+Launcher HB Turbo Draw
+GS53
+EPIC Speed Triple Diamond
+G430 MAX 10K HL
+Paradym Ai Smoke Ti 340 Mini
+G440 HL Max
+Amp Cell-S Black
+R15 430
+X Series N415
+F-Max Superlite Offset Womens
+ST190 G
+RocketBallz Tour TP
+Original One Mini
+EPIC Flash SZ Triple Diamond
+Bio Cell Red
+Bio Cell + Black
+2014 Idea Womens
+Baffler XL
+Speed LD M
+975 JVS
+R7 Quad HT
+X 460 Tour
+Sasquatch
+R9 SuperTri TP
+2008 Launcher
+Hibore Monster XLS
+S9-1 M
+2009 Burner TP
+Diablo Edge
+FT Optiforce 460
+XL 270
+ZL Encore
+Victory Red S
+2013 X Hot Womens
+RocketBallz Stage 2 Tour
+Fusion FT-3
+360
+JGR
+SLDR White
+0811LX
+HS9 F
+Hot Launch 4
+X Black
+Exotics Pro 721
+Exotics C722
+Launch Pad 2
+Aerojet MAX Womens
+Qi10 Designer Series Max
+Elyte Triple Diamond Tour Draw
+ZL
+G15 Draw
+R15 TP Black
+AMP-D
+2015 CG Black Custom
+Burner Superfast 3.0
+SLDR C
+915 D4
+X Series N416
+Prime 9
+D300
+ZL Encore White
+8
+Classic 290
+M3 440
+Exotics EXS
+D7
+Prime
+AMP Cell Orange
+XCG6
+ERC Fusion
+SLDR TP
+Bio Cell Blue
+MX-560
+M Speed Offset Womens
+Miscela 2006
+R7 Superquad TP
+905 S
+Sasquatch Sumo 2
+Sasquatch Sumo 2 5900
+Hibore XLS Draw
+R7 Limited
+Speedline Draw
+FT-9 Tour
+S9-1 Senior
+S9-1 F
+G5 Ladies
+R9 TP
+Speedline F11
+Razrhawk Tour
+Diablo Octane Tour
+S3 Max Offset
+SQ Machspeed Black Round
+Victory Red Pro
+AMP Cell OS
+HT Max-J 5-8 Red
+HT Max-J 3-5 Red
+X Hot N14
+MX-700
+JPX 850
+ST200 G
+Prodi G Junior
+Hot Launch C521
+GS53 Max
+RBZ Speedlite
+SIM MAX USA
+0211 Z
+Mavrik Sub Zero Triple Diamond
+Qi10 Designer Series LS
+Paradym Ai Smoke Triple Diamond Max
+Triton DVD
+DS-ADAPT MAX-D
+Elyte Max Fast
+2025 DYNAPWR Carbon
+Prime Royal Edition 6
+Prime 13
+Elyte Triple Diamond Max
+TL 310
+Amp Cell-S Blue
+R15 TP
+Bio Cell Green
+Aeroburner Mini
+2015 JPX EZ
+King LTD Pro
+M1 Limited Edition
+Big Bertha Fusion FT-2
+G812 Junior
+The Groove
+Exotics XJ1
+Twin Marks 400RF
+Exotics EX10
+Formula 6.5
+Fast 12 LS
+R11s TP
+C300
+AF-105
+Hot Launch 3 Offset
+Tour B JGR
+Cortex
+KING F9 Speedback Womens
+RocketBallz TP
+AMP Cell Pro Orange
+Bio Cell + Blue
+MP-600
+Tight Lies Plus
+Hibore XL Tour
+Insight BUL
+Launcher Ti 460 2006 Offset
+NDS
+MP-001
+R5 XL 460
+R510 TP
+R540 XD
+R7 425 TP
+R540
+Speedline Fast 10
+Exotics XCG3
+Burner Superfast TP
+R9 Superdeep TP
+G5 Offset
+Womens  W Series
+Hibore XLS Tour
+SS 380
+Tour Burner TP
+Hibore Bloom Womens
+Victory Red
+SQ Machspeed Black Square
+9088 UL
+Victory Red Pro Limited
+RocketBallz Stage 2 Womens
+Classic XL Custom
+Jetspeed TP
+SLDR 430 TP
+Forged Titanium 450cc
+Exotics XCG
+0811
+909 DComp
+SLDR Mini TP
+Bio Cell Pro Black
+F-Max Womens Offset
+HS9 M
+975 J
+Hot Launch 4 Offset
+Bazooka 470 Black
+KING SpeedZone Xtreme Womens
+Eleven Ladies
+EXS Pro
+Hot Launch E521
+Formula 11 Long Drive
+D9
+LTDx Max Womens
+AMP Cell Pro Red
+Speedline Launch Lab Custom
+Formula Fire X HIGH-COR
+BRNR Mini
+TW Limited Edition Ignite 2004
+Atomic
+Stealth Gloire
+Formula Fire XX Super HIGH-COR
+BRNR Copper Mini
+Exotics C725
+DS-ADAPT MAX-K Womens
+DS-ADAPT MAX-K Junior
+DS-ADAPT MAX-D Women's
+2025 DYNAPWR Max
+Prime Royal Edition 6 Ladies
+FT Tour
+SL 290
+Hot Launch
+Big Bertha Alpha 815 DBD
+Fly-Z Womens
+RocketBallz Pro
+Fly-Z XL Womens
+Verdana
+2015 Great Big Bertha Womens
+SLDR S TP
+2015 JPX EZ Ladies
+Z 355
+Speedline Super S Black
+Formula 6
+Exotics EX9
+Idea A12 OS
+Solaire Gems
+J40 445
+Triton
+King LTD Black
+TW727 455
+TW737 450
+G1X
+Tour B XD-5
+Beres MG 710
+S3 White
+Prime 8
+Hot Launch 2 Offset
+Tour Limited GBB EPIC Red
+Hot Launch 3
+GT180
+S-06
+E-06
+BeZEAL 535
+Formula 7X
+Deep Red II Distance
+Launcher Comp
+588 Altitude
+JPX EZ
+Baffler XL Womens
+Bio Cell + Red
+Bio Cell Orange
+Bio Cell Silver Womens
+S2 Offset Ladies
+2014 Solaire
+Hibore XL Womens Series
+Hip-Ti 420
+Ignite 410
+Ignite 450
+J33 R
+M Speed Offset Senior
+Launcher Ti 460 2006
+Launcher 400
+Miscela
+G2 Ladies
+R5 Dual TP
+R510
+R580 Womens
+R7 460 TP
+Redline 460 Offset
+Speed Pro S
+SS 350
+SZ 400
+Launcher DST Tour
+Diablo Edge Tour
+Victory Red Tour
+975 D
+975 LFE
+Big Ben C-S3
+4DX Evolver
+Bazooka Geomax 2
+MT 460
+Burner 420
+983 E
+Jesse Ortiz Workshop Series
+S9-1 Womens
+Exotics XCG-V
+Idea A7 OS
+Speedline 9032 LS
+Speedline 9064 LS
+Speedline 4G Ultra Lite
+FT Optiforce 440
+SZ 355 Offset
+XL 270 Draw
+Lady Edge
+S9-1 Pro D
+S9-1 Pro S
+Bazooka HT Max Distance
+Victory Red S Womens
+Speedline Super LS
+R1 Black TP
+Razr X Black Ti
+Beres C-01
+Bio Cell + Silver
+Forged Titanium 400cc
+W-506
+320
+MP-630
+L4V M
+Exotics XLD
+X2 Hot Womens
+i-Ezone TX Type 460
+S-03
+L5V M Speed
+SLDR TP White
+F-Max
+F-Max Womens
+Z 745
+XL Womens
+X Hot 19 Womens
+AF-155i
+F-MAX Airspeed Straight Neck
+F-MAX Airspeed Offset Womens
+KING SpeedZone Xtreme Junior
+ST200 X
+TA1
+Formula 11 X High-COR
+839D
+TR20 460
+Profile SGI
+2020 Ultralight
+TPS Blackout
+Beres 07 4-Star
+Air X Womens
+SIM Gloire
+Signature
+849 Pro
+B2
+Formula Fire Pro
+G430 HL SFT
+Darkspeed Max Junior
+2023 Idea
+TW757 D
+Kalea Gold
+Exotics E725
+G440 HL SFT
+Qi35 MAX Lite
+Qi35 MAX Lite Women's
+Reva Rise
+Secret Weapon Mini
+Paradym Ai Smoke TD Tactical Edition
+685X
+2025 DYNAPWR LS
+2025 DYNAPWR Carbon Lite
+2025 DYNAPWR Max Lite
+E525
+Hot Launch X525
+Qi10 Designer Series
+GT280 Mini

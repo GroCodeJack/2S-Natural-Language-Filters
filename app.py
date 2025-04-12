@@ -3,44 +3,185 @@ from flask import Flask, request, redirect, url_for, render_template_string
 from openai import OpenAI
 import requests
 from bs4 import BeautifulSoup
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 
 app = Flask(__name__)
+
+limiter = Limiter(
+    get_remote_address,   # 1st positional argument = key_func
+    app=app,              # Pass the Flask app as a named argument
+    default_limits=["50 per hour"],
+    storage_uri="memory://"
+)
 
 # We'll store results in these globals to keep it easy.
 last_products = []
 last_query = ""
 last_url = ""
+last_club_type = ""
 
 #####################
-# OpenAI Setup (New SDK style)
+# OPENAI SETUP
 #####################
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-# We'll define a system prompt that tells GPT exactly how to respond.
-SYSTEM_PROMPT = """Here is a massive URL that reflects how the URL gets created when you choose filters on our website. we're just looking at drivers rn. 
+#####################
+# MAP CLUB TYPE → PROMPT FILE
+#####################
+club_prompt_files = {
+    "Driver": "driver.txt",
+    "Fairway Woods": "fairway.txt",
+    "Hybrids": "hybrid.txt",
+    "Iron Sets": "ironset.txt",
+    "Wedges": "wedge.txt",
+    "Putters": "putter.txt",
+    "Single Irons": "singleiron.txt"
+}
 
-https://www.2ndswing.com/golf-clubs/drivers?g2_brand%5B0%5D=Cleveland&g2_brand%5B1%5D=Cobra&g2_brand%5B2%5D=Mizuno&g2_brand%5B3%5D=Ping&g2_brand%5B4%5D=TaylorMade&g2_brand%5B5%5D=Titleist&g2_club_desiredballflight%5B0%5D=Draw+Bias&g2_club_desiredballflight%5B1%5D=Draw%2FHook&g2_club_desiredballflight%5B2%5D=Fade%2CNeutral&g2_club_desiredballflight%5B3%5D=High+MOI&g2_club_desiredballflight%5B4%5D=Low+Spin+%2F+Fade&g2_club_desiredballflight%5B5%5D=Neutral&g2_club_length%5B0%5D=45.25in&g2_club_length%5B1%5D=45.5in&g2_club_length%5B2%5D=45.75in&g2_club_loft%5B0%5D=10.5%C2%B0&g2_club_loft%5B1%5D=10%C2%B0&g2_club_loft%5B2%5D=11%C2%B0&g2_club_loft%5B3%5D=12%C2%B0&g2_club_loft%5B4%5D=9.5%C2%B0&g2_condition%5B0%5D=Above+Average+9.0&g2_condition%5B1%5D=Average+8.0&g2_condition%5B2%5D=Below+Average+7.0&g2_condition%5B3%5D=Mint+9.5&g2_condition%5B4%5D=New&g2_dexterity%5B0%5D=Left+Handed&g2_dexterity%5B1%5D=Right+Handed&g2_locations%5B0%5D=Columbia&g2_locations%5B1%5D=Dallas&g2_locations%5B2%5D=Hub&g2_locations%5B3%5D=Minnetonka&g2_locations%5B4%5D=Scottsdale+%28S%29&g2_shaft_flex%5B0%5D=Regular&g2_shaft_flex%5B1%5D=Senior&g2_shaft_flex%5B2%5D=Stiff&g2_shaft_flex%5B3%5D=X-Stiff&new_used_filter%5B0%5D=New&new_used_filter%5B1%5D=Used&price=425-850
-
-Keep in mind there are is 'condition' and 'new/used' filters. The URL above is just an example of how the URL gets built when you choose filters. If use specifies new or used, use the new_used_filter, but if they specify a more specific condition, use g2_condition.
-
-This URL should act as an example for how to build URLs when certain filters are added or chosen. However I want to go a step further. I want to describe to you drivers, in natural language, that I'm looking for, and have you build a URL based on the example you saw. When I give you a request, you will respond ONLY with a url. Ready? 
-"""
-
-def get_url_from_llm(user_query: str) -> str:
+#####################
+# STEP 1: CLASSIFICATION
+#####################
+def classify_query_is_model_specific(user_query: str) -> bool:
+    """
+    Uses a lightweight LLM to determine if the user is specifying
+    particular club models (return True) or is generic (False).
+    Expects the LLM to respond with '1' or '0' only.
+    """
+    system_prompt = (
+        "You are the first step in a natural language search tool whose purpose is "
+        "to decide whether the user's query is asking about specific golf club models, "
+        "or is more generic. If you detect a model-specific query, respond '1'. "
+        "Otherwise respond '0'. NEVER provide any text besides '1' or '0'."
+    )
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",  # or "gpt-3.5-turbo"
+            model="gpt-4o-mini",  # or any small classification model
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_query}
+            ],
+            temperature=0
+        )
+        classification = response.choices[0].message.content.strip()
+        # Debug
+        print(f"[DEBUG] classification result: {classification}")
+        return (classification == "1")
+    except Exception as e:
+        print("OpenAI classification error:", e)
+        return False
+
+#####################
+# STEP 2: EXTRACTION + MAPPING
+#####################
+def extract_and_map_models(user_query: str, club_type: str) -> str:
+    """
+    If the first LLM decides the query is model-specific, we call this function.
+    It uses a second LLM to:
+    1. Identify any model references in the user query,
+    2. Map them to the official model names from our local /model_data/ file,
+    3. Return a single line of comma-separated pairs like:
+         userReference=officialModelName, userReference=officialModelName,...
+       Or an empty string if nothing is confidently matched.
+    """
+
+    # Load the official model list from /model_data/<club_type>.txt
+    folder = "model_data"
+    file_map = {
+        "Driver": "drivers.txt",
+        "Fairway Woods": "fairways.txt",
+        "Hybrids": "hybrids.txt",
+        "Iron Sets": "ironsets.txt",
+        "Wedges": "wedges.txt",
+        "Putters": "putters.txt",
+        "Single Irons": "singleirons.txt"
+    }
+    model_filename = file_map.get(club_type, "drivers.txt")
+    path = os.path.join(folder, model_filename)
+
+    try:
+        with open(path, "r") as f:
+            model_list = f.read().strip()
+    except Exception as e:
+        print("Error reading model_data file:", e)
+        model_list = ""  # fallback if file not found
+
+    # Build system prompt for the extraction+mapping LLM
+    system_prompt = f"""
+You are an assistant specializing in identifying golf club {club_type} model names 
+within a user's query and mapping them to an official list of known models.
+
+Instructions:
+1. Read the user's query and find all references to specific model names or series.
+2. Compare each reference to the provided list of known club models (below).
+3. Find the best possible match for each reference (even if the user uses partial names, abbreviations, or slightly different wording).
+4. For every reference you can confidently match, output the pair in the format: userReference=officialModelName
+5. Separate multiple pairs by commas—no other punctuation or text is allowed.
+6. If you cannot confidently match a reference to any official model name, omit it.
+7. Your final response must be a single line, containing only these comma-separated pairs, and nothing else.
+
+List of official {club_type} models:
+{model_list}
+
+Now respond based on the user's input.
+""".strip()
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o",  # or whichever model you prefer
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_query}
+            ],
+            temperature=0
+        )
+        mapped_output = response.choices[0].message.content.strip()
+        print(f"[DEBUG] extraction+mapping output: {mapped_output}")
+        return mapped_output
+    except Exception as e:
+        print("OpenAI extraction error:", e)
+        return ""
+
+#####################
+# STEP 3: URL-BUILDING
+#####################
+def build_url_with_llm(user_query: str, system_prompt: str, mapped_models: str, club_type: str) -> str:
+    """
+    The final step: pass the original (untouched) user query plus any extracted model data
+    into the system prompt that constructs the final URL.
+    We do NOT modify user_query. We simply provide mapped_models separately as extra context.
+    """
+
+    additional_instructions = ""
+    if mapped_models.strip():
+        additional_instructions = (
+            f"\n\nBelow is a list of mapped models relevant to this query:\n{mapped_models}\n"
+            "Use them to set the g2_model filters in the final URL."
+        )
+
+    # Combine the main system prompt with the extra instructions
+    final_system_prompt = system_prompt + additional_instructions
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o",  # or "gpt-3.5-turbo", etc.
+            messages=[
+                # The system prompt with appended mapped_models context
+                {"role": "system", "content": final_system_prompt},
+                # The user's original query remains untouched
                 {"role": "user", "content": user_query}
             ],
             temperature=0
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print("OpenAI error:", e)
+        print("OpenAI URL-building error:", e)
         return ""
 
+#####################
+# SCRAPING 2ND SWING
+#####################
 def scrape_2ndswing(url: str):
     import requests
     from bs4 import BeautifulSoup
@@ -63,8 +204,6 @@ def scrape_2ndswing(url: str):
             brand = brand_div.get_text(strip=True) if brand_div else "N/A"
 
             # MODEL
-            # (Single used clubs often have .pmp-product-category;
-            #  Parent models might have .p-title instead.)
             model_div = p.find("div", class_="pmp-product-category")
             if model_div:
                 model = model_div.get_text(strip=True)
@@ -73,18 +212,16 @@ def scrape_2ndswing(url: str):
                 model = title_div.get_text(strip=True) if title_div else "N/A"
 
             # URL
-            # Typically in <a class="product photo product-item-photo" href="...">
             link_tag = p.select_one("a.product.photo.product-item-photo")
             product_url = link_tag["href"] if link_tag else ""
 
             # Check if new-configurable parent or single used
             is_parent_model = (
-                p.get("data-itemhasused") == "1"
-                and p.get("data-hasnewvariants") == "1"
+                p.get("data-itemhasused") == "1" and
+                p.get("data-hasnewvariants") == "1"
             )
 
             if is_parent_model:
-                # For parent model, show minimal info in your final UI
                 all_data.append({
                     "brand": brand,
                     "model": model,
@@ -100,7 +237,7 @@ def scrape_2ndswing(url: str):
                 })
                 continue
 
-            # If it's a single used club, parse all details
+            # Single used club
             price_div = p.find("div", class_="current-price")
             price = price_div.get_text(strip=True) if price_div else "N/A"
 
@@ -160,50 +297,79 @@ def scrape_2ndswing(url: str):
         print("Scrape error:", e)
         return []
 
-
-
-
 #####################
-# SINGLE ROUTE
+# MAIN FLASK ROUTE
 #####################
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global last_products, last_query, last_url
+    global last_products, last_query, last_url, last_club_type
 
     if request.method == "POST":
-        # User typed a new search
+        # 1) Grab user input
         user_query = request.form.get("user_query", "")
+        club_type = request.form.get("club_type", "Driver")
 
-        # 1) GPT -> get URL
-        generated_url = get_url_from_llm(user_query)
+        # STEP 1: CLASSIFICATION
+        is_model_specific = classify_query_is_model_specific(user_query)
 
-        # 2) Scrape
+        # STEP 2: EXTRACTION + MAPPING (only if it's model-specific)
+        mapped_models = ""
+        if is_model_specific:
+            mapped_models = extract_and_map_models(user_query, club_type)
+
+        # STEP 3: URL-BUILDING
+        # Load correct system prompt for this club type
+        prompt_filename = club_prompt_files.get(club_type, "driver.txt")
+        prompt_path = os.path.join("textdocs", "prompts", prompt_filename)
+
+        try:
+            with open(prompt_path, "r") as f:
+                system_prompt = f.read()
+        except Exception as e:
+            print("Error reading prompt file:", e)
+            system_prompt = "Build a URL for the chosen club type."
+
+        # Build the final URL using the unmodified user query + mapped models
+        generated_url = build_url_with_llm(
+            user_query=user_query,
+            system_prompt=system_prompt,
+            mapped_models=mapped_models,
+            club_type=club_type
+        )
+
+        # Scrape the final URL
         product_data = scrape_2ndswing(generated_url)
 
-        # 3) Stash in global vars
+        # Store results in globals
         last_query = user_query
         last_url = generated_url
         last_products = product_data
+        last_club_type = club_type
 
-        # 4) Redirect so refreshing doesn't re-POST
         return redirect(url_for("index"))
+
     else:
-        # GET request → show results if we have them
-        # Then CLEAR so refresh empties the page
+        # GET request: show results if we have them
         local_query = last_query
         local_url = last_url
         local_products = last_products
+        local_club_type = last_club_type
 
-        # Clear them out
+        # Clear them out so refresh doesn’t re-show same data
         last_query = ""
         last_url = ""
         last_products = []
+        last_club_type = ""
 
-        return render_template_string(HTML_TEMPLATE,
+        # Render your template below...
+        return render_template_string(
+            HTML_TEMPLATE,  # Insert your existing HTML_TEMPLATE here
             user_query=local_query,
             generated_url=local_url,
-            products=local_products
+            products=local_products,
+            club_type=local_club_type
         )
+
 
 #####################
 # HTML
@@ -293,16 +459,14 @@ HTML_TEMPLATE = """
         /* PRODUCT RESULTS */
         .product-grid {
             display: grid;
-            /* We want auto‐fitting columns of at least 220px, but no more than 4 columns total */
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1em;           /* spacing between columns/rows */
-            max-width: 1000px;  /* ensures at most ~4 columns fit */
-            margin: 0 auto;     /* center grid within the page */
-            justify-items: center; /* optional, center tiles horizontally in their cells */
+            gap: 1em;
+            max-width: 1000px;
+            margin: 0 auto;
+            justify-items: center;
         }
 
         .tile {
-            /* No need for fixed width; let grid handle it */
             border: 1px solid #ccc;
             border-radius: 6px;
             padding: 1em;
@@ -325,18 +489,17 @@ HTML_TEMPLATE = """
             color: #444;
         }
 
-        /* MAKE THE GENERATED URL WRAP & HAVE SPACE ABOVE IT */
         .generated-url {
             word-wrap: break-word;
             overflow-wrap: break-word;
             white-space: normal;
-            margin: 2em auto 2em auto; /* 2em top margin for space, auto horizontally */
-            max-width: 600px;         /* keep it from going edge to edge on large screens */
+            margin: 2em auto 2em auto;
+            max-width: 600px;
         }
 
         .generated-url a {
             color: #b71c1c;
-            text-decoration: none; /* remove underlines if you'd like */
+            text-decoration: none;
         }
 
         .generated-url a:hover {
@@ -346,11 +509,8 @@ HTML_TEMPLATE = """
         /* MOBILE RESPONSIVENESS */
         @media (max-width: 600px) {
             body {
-                font-size: 18px; /* bigger text on smaller screens */
+                font-size: 18px;
                 margin: 1em;
-            }
-            .tile {
-                width: 90%; /* tile goes full width on small screens */
             }
         }
     </style>
@@ -364,17 +524,29 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <h1 style="text-align:center;">Natural Language Golf Search</h1>
+    <p style="text-align:center;">Enter your search in plain English and let us do the rest!</p>
 
     <!-- LOADING SPINNER -->
     <div id="spinner-overlay">
         <div id="spinner">
-            <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTN1bmc2d2o1dnM5dXBuNzNncmxqYTN0NDFydXVybGQ3cTRvYnhqNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sSgvbe1m3n93G/giphy.gif" alt="Loading...">
+            <img src="https://media3.giphy.com/media/sSgvbe1m3n93G/giphy.gif" alt="Loading...">
             <p>Loading...</p>
         </div>
     </div>
 
-    <!-- YOUR FORM -->
+    <!-- SEARCH FORM -->
     <form method="POST" onsubmit="showSpinner()">
+        <label for="club_type" style="font-weight:bold;">Select Club Type:</label>
+        <select id="club_type" name="club_type">
+            <option value="Driver" {% if club_type == "Driver" %}selected{% endif %}>Driver</option>
+            <option value="Fairway Woods" {% if club_type == "Fairway Woods" %}selected{% endif %}>Fairway Woods</option>
+            <option value="Hybrids" {% if club_type == "Hybrids" %}selected{% endif %}>Hybrids</option>
+            <option value="Iron Sets" {% if club_type == "Iron Sets" %}selected{% endif %}>Iron Sets</option>
+            <option value="Wedges" {% if club_type == "Wedges" %}selected{% endif %}>Wedges</option>
+            <option value="Putters" {% if club_type == "Putters" %}selected{% endif %}>Putters</option>
+            <option value="Single Irons" {% if club_type == "Single Irons" %}selected{% endif %}>Single Irons</option>
+        </select>
+
         <label for="user_query" style="font-weight:bold;">Enter Your Search:</label>
         <textarea
             id="user_query"
@@ -382,51 +554,46 @@ HTML_TEMPLATE = """
             class="search-textarea"
             placeholder="e.g. Titleist left-handed driver regular flex under $400"
         >{{ user_query }}</textarea>
+
         <button type="submit" class="search-button">Search</button>
     </form>
 
-    <!-- WRAPPED URL WITH SPACING ABOVE -->
     {% if generated_url %}
-        <div class="generated-url">
-            <strong>Generated URL:</strong>
-            <a href="{{ generated_url }}" target="_blank">{{ generated_url }}</a>
-        </div>
+    <div class="generated-url">
+        <strong>Generated URL:</strong>
+        <a href="{{ generated_url }}" target="_blank">{{ generated_url }}</a>
+    </div>
     {% endif %}
 
-    <!-- PRODUCT GRID -->
     {% if products and products|length > 0 %}
-        <div class="product-grid">
-            {% for product in products %}
-                <div class="tile">
-                    <a href="{{ product.url }}" target="_blank" style="text-decoration: none; color: inherit;">
-                        <img src="{{ product.img_url }}" alt="Product Image">
-                        <h3>{{ product.brand }} {{ product.model }}</h3>
-
-                        {% if product.parent_model %}
-                            <!-- If it's a parent model, just show "PARENT MODEL" -->
-                            <div class="attr">
-                                <p>PARENT MODEL</p>
-                            </div>
-                        {% else %}
-                            <!-- Single used club: show price and attributes -->
-                            <div class="price-text">{{ product.price }}</div>
-                            <div class="attr">
-                                <p>Condition: {{ product.condition }}</p>
-                                <p>Dexterity: {{ product.dexterity }}</p>
-                                <p>Loft: {{ product.loft }}</p>
-                                <p>Flex: {{ product.flex }}</p>
-                                <p>Shaft: {{ product.shaft }}</p>
-                            </div>
-                        {% endif %}
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="tile">
+                <a href="{{ product.url }}" target="_blank" style="text-decoration: none; color: inherit;">
+                    <img src="{{ product.img_url }}" alt="Product Image">
+                    <h3>{{ product.brand }} {{ product.model }}</h3>
+                    {% if product.parent_model %}
+                        <div class="attr">
+                            <p>PARENT MODEL</p>
+                        </div>
+                    {% else %}
+                        <div class="price-text">{{ product.price }}</div>
+                        <div class="attr">
+                            <p>Condition: {{ product.condition }}</p>
+                            <p>Dexterity: {{ product.dexterity }}</p>
+                            <p>Loft: {{ product.loft }}</p>
+                            <p>Flex: {{ product.flex }}</p>
+                            <p>Shaft: {{ product.shaft }}</p>
+                        </div>
+                    {% endif %}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
     {% endif %}
 </body>
 </html>
 """
-
 
 if __name__ == "__main__":
     # Run locally

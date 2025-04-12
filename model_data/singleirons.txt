@@ -1,0 +1,1051 @@
+Burner 2.0
+Rocketbladez
+2009 Burner
+G10
+G15
+G2
+Blueprint
+X-20
+i3 Oversize
+RocketBallz
+Eye 2
+X-18
+i210
+Speedblade
+G25
+G5
+Prodi G
+2016 G
+X-14
+i59
+G430
+Rogue
+R7
+Burner Plus
+iBlade
+2019 M2
+G20
+Apex CF16
+X2 Hot
+716 AP1
+Rac OS
+Zing
+2021 T100
+XR
+G30
+X-12
+712 AP1
+X-16
+Mavrik
+G400
+Razr X
+X-22
+I20
+i525
+i500
+G2 HL
+RSi 1
+Steelhead XR
+M6
+Apex 21
+Zing 2
+714 AP1
+2004 Big Bertha
+Rogue X
+716 AP2
+ISI K
+Diablo Edge
+AP2
+Apex DCB 21
+Apex 19
+Eye 2 Beryllium Copper
+i3 Blade
+P-790
+712 AP2
+G410
+Paradym
+i200
+Victory Red Pro Combo
+i10
+I25
+2002 Big Bertha
+2013 X Hot
+Paradym X
+T200
+Rac OS 2005
+2016 M2
+Eye 2 +
+714 AP2
+718 AP1
+JPX 921 Hot Metal
+Apex
+i3 +
+i15
+710 AP2
+Big Bertha B21
+M4
+i5
+2006 Big Bertha
+MX 23
+2021 T300
+i230
+Paradym Ai Smoke
+2019 P790
+Big Bertha OS
+SIM MAX
+710 AP1
+G700
+Apex Pro 21
+2021 T100S
+716 T-MB
+MP 60
+1996 Big Bertha
+K15
+2021 T200
+JPX 919 Hot Metal
+R9
+2019 Big Bertha
+T100
+AP1
+Gmax
+X-20 Tour
+G425
+Razr X HL
+S59
+Fusion
+R11
+Idea A12 OS
+Paradym Ai Smoke HL
+Burner 2.0 HP
+Burner Superlaunch
+MP 30
+Rapture
+2020 P770
+Rapture V2
+Mavrik Max
+2018 X Forged
+M1
+R7 Draw
+3100 IH
+Stealth
+Apex Pro 16
+ISI
+Rocketbladez Tour
+S55
+SS-i Oversize
+JPX 923 Hot Metal
+2015 Big Bertha
+2014 Karsten
+P7MC
+XR OS
+MP 57
+T300
+X Forged CB 21
+RSi 2
+R7 TP
+1994 Big Bertha
+PSi
+P770
+Apex Pro 19
+MP 32
+2011 Tour Preferred MC
+AeroBurner
+King Cobra Oversize
+Idea A7 OS
+620 CB
+2015 i
+MP 59
+Fly-Z
+DCI Black Oversize +
+Rac HT
+JPX 923 Hot Metal HL
+M CGB
+Apex Pro
+TA7
+Hawkeye VFT
+718 AP2
+Launcher XL Halo
+Rogue ST Max
+2010 HB3
+X-16 Pro Series
+DCI 990
+620 MB
+SIM2 MAX
+Launcher XL
+JPX 900 Hot Metal
+G710
+S56
+RSi TP
+Launcher HB
+X-22 Tour
+Fusion Wide Sole
+JPX 800 Pro
+MAX
+King F6
+Hibore
+2023 P790
+G LE
+MP 33
+R7 CGB
+Sasquatch Machspeed
+MP-18 MMC Fli-Hi
+Launcher HB Turbo
+Apex MB 21
+Rocketballz HL
+2009 X Forged
+Victory Red Pro Cavity
+718 T-MB
+JPX 923 Hot Metal Pro
+2023 T150
+Slingshot 4D
+DCI 762
+FT
+Apex TCB 21
+Rogue ST Max OS Lite
+704.CB
+2017 Forged
+ISI Beryllium Copper
+Rogue Pro
+Idea
+Supersteel
+Victory Red Cavity Back
+2013 X Hot Pro
+2021 P790
+Hot Launch E523 Ironwood
+Pro 225
+2014 Idea
+TA5
+718 AP3
+718 CB
+SIM MAX OS
+Mavrik Pro
+JPX 800
+712 CB
+Baffler XL
+MX 25
+Rac LT 2005
+X-18 R
+Razr X Tour
+X Tour
+MP 52
+0311 P GEN4
+2023 T100
+716 CB
+2018 Apex MB
+RocketBallz Max
+SLDR
+G2 EZ
+Rac LT
+2008 Big Bertha
+G5 Ladies
+DCI 962
+G LE 2
+0311 XP GEN4
+MP 53
+MP-H4
+JPX 825 Pro
+Rocketbladez HL
+Ignite
+Idea A3 OS
+King Cobra 2 Oversize
+Rac CGB
+Slingshot
+2011 Tour Preferred CB
+FT i-Brid
+0311 Chrome
+EPIC Forged
+FP
+Idea A2 OS
+Burner Oversize
+MP 62
+ZX7
+Rogue ST Max OS
+JPX 923 Forged
+Vapor Speed
+AMP Cell Silver
+MP-54
+Rhapsody
+X
+S57
+MP-20
+0311 XP GEN5 Chrome
+MP 58
+712 MB
+716 MB
+845S Silver Scot
+R7 CGB Max
+Big Bertha Tungsten Titanium
+X Forged
+S9
+TA6
+X-14 Pro Series
+JPX 850
+12
+Big Bertha 23
+2023 T350
+King F7 One Length
+JPX EZ
+714 CB
+2014 Tour Preferred MC
+Bio Cell Silver
+X-18 Pro Series
+Tour Burner
+Burner XD
+MP 15
+2023 P7MC
+ZX5 MK II
+Razr X Black
+MP-64
+JPX 825
+588 Altitude
+M3
+MX 17
+Slingshot OSS
+R7 XD
+2008 R7 CGB Max
+2009 Tour Preferred
+MP-18 MMC
+MP-20 HMB
+0311 XP GEN3
+0211 XCOR2 Chrome
+0311 XP GEN6
+Speedblade HL
+MP 25
+0311 P GEN2 Chrome
+Forged Pro Combo
+MX 20
+T-Zoid Pro Forged
+SS Oversize
+Idea Tech V3
+0311 P GEN3
+VRS X
+Faith
+Anser Forged 2010
+JPX 900 Forged
+Launcher UHX
+ZX4
+EPIC MAX Star
+S2
+ISI Nickel
+M5
+714 MB
+i3 + Blade
+NDS
+S58
+R9 TP
+S2 Max
+F-Max
+SIM2 MAX OS
+2023 P770
+King Oversize
+King F8 One Length
+P760
+Rocketballz HP
+690 CB Forged
+690.CB Forged
+JPX EZ Forged
+2014 Tour Preferred CB
+Hibore XLI
+Victory Red S
+2012 Baffler
+UFI
+710 MB
+CG16 Black Pearl
+S3
+2015 JPX EZ
+X Series N415
+EPIC Star
+Z585
+Eye
+695 CB Forged
+2014 Idea Womens
+Burner LCG
+2011 Tour Preferred MB
+DCI 981
+3400 I/XH
+MP H5
+2020 KING Forged Tec
+Hot Launch E524 Ironwood
+MP 68
+0311 T GEN2 Chrome
+0311 XF GEN2 Chrome
+JPX 919 Forged
+588 MT
+2014 Tour Preferred MB
+Idea A2
+G2 Ladies
+Diablo Forged
+300
+Firesole
+VRS Covert 2.0
+T100S
+Rogue ST Pro
+Dynapwr
+2023 T200
+Pro 245
+Paradym Ai Smoke Max Fast
+Qi
+2024 P770
+710 CB
+Z 565
+Exotics EXS
+2018 Edge
+Rocketbladez Max
+MX 100
+Victory Red Split Cavity
+2009 SZ
+804.OS
+Z 745
+EPIC Forged Star
+Paradym Star
+Apex Ai200
+XR Pro
+X Series N416
+King F7
+0311XF Chrome
+Razr XF
+Anser Forged 2013
+Z785
+King Cobra Oversize Senior
+690 MB Forged
+XTD Cross Cavity
+MP 14
+2014 Solaire
+855S Silver Scot
+Transition S Ladies
+SS-i Oversize Lady
+Sasquatch Sumo
+Victory Red S Forged
+Eye 2 + Beryllium Copper
+Burner HT
+Aeroburner HL
+X Hot N14
+JPX 850 Forged
+Mavrik Max Womens
+Apex CB 24
+Fly-Z XL
+2015 Idea Tech
+CG Gold
+Vapor Fly
+P750 Tour Proto
+Launcher CBX
+KING F9 Speedback One Length
+Idea Tech V4
+2013 X Forged
+DCI 822 Oversize
+Idea Super S
+Lady II Oversize
+VR Forged Pro Combo
+Apex Plus
+MX 200
+X-24 Hot
+S9 Women
+360
+CG16 Satin Chrome
+Kalea Ladies
+P7MB
+Edge EX
+Great Big Bertha 23
+Amp Cell-S
+Fly-Z Pro
+2015 Rhapsody
+CG4
+2015 JPX EZ Forged
+FT Worth 15
+Solaire Gems
+PTx
+Prime 9
+AMP
+Idea Black CB3
+King Cobra Oversize Tour
+Edge
+FP Women
+MP 67
+MX 900
+MX 19
+T-Zoid EZ Comp
+Idea Pro Gold
+Idea Tech A4R
+Staff Model CB
+Fly-XL Mens
+2021 T-Rail
+LB-1
+ZX4 MK II
+Blueprint S
+2024 P7CB
+2025 KING Tec X One Length
+Epic
+Fly-Z + Forged
+CCI Cast
+Idea Pro
+Razr HL
+MP 63
+KING Black Forged Tec
+0311 SGI GEN2 Chrome
+588 TT
+200 Steel
+Amp Cell Pro
+MX 15
+735.CM Chrome
+Miscela 2006
+Rac TP Combo
+T-Zoid True
+Idea A7 OS Max
+Idea A7
+Razr X Forged
+2013 X Hot Womens
+Hawkeye
+0311T Chrome
+0211 DC
+D9 Forged
+0311 P GEN5 Chrome
+2023 P7MB
+Exotics C723
+2025 KING Tec X
+3DP Tour
+2015 Blue
+Idea Pro A12
+MP 5
+Z 765
+9
+JPX 919 Tour
+Prime
+Serene
+Forged Pro Combo Tour
+MP 4
+Idea A3
+Rac TP 2005
+Apex Edge
+2010 Slingshot
+DCI Black
+Edge CFT
+Vas +
+S9 2
+718 MB
+0211
+T400
+PTx PRO Black
+Pro 223
+0311 XP Gen4 Xtreme Dark
+0311 T GEN5 Chrome
+2023 T-Rail
+ZX7 MK II
+C200
+M2 Tour
+Z 965
+Epic Pro
+P-730
+JPX 800 HD
+Apex Smoke 19
+KING F9 Speedback
+CNCPT-01
+D7
+DCI Gold
+Razr X NG
+735.CM Stainless
+Idea A1
+King Cobra 2 Senior
+MX 950
+Zing Beryllium Copper
+Idea Pro Black CB2
+Big Bertha Gold
+Victory Red Blade
+CG7 Tour Black
+775.CB
+G10 XG
+DCI 962 B
+DCI Senior Oversize
+TA5 Gunmetal
+320
+ZB Forged
+MP-18
+X Hot 19
+0311 T GEN3
+Big Bertha REVA Womens
+JPX 921 Forged
+JPX 921 Hot Metal Pro
+Staff Model Blade
+RAD Speed One Length
+D9
+RBZ Speedlite
+Pro 221
+2022 KING Forged Tec
+2023 KING Tour
+Prime 12
+Apex MB 24
+Pro 243
+Blueprint T
+ZipCore XL
+Apex TiFusion
+2025 KING Tec
+2015 CG Black
+Z 355
+PSi Tour
+J33 Forged Cavity Back
+Hot Launch 3
+DCI Gold Overszie +
+LCG
+Baffler XL Womens
+695 MB Forged
+Transition S
+Transition S Senior
+T-Zoid T3 Titanium
+SS Forged
+Slingshot HL
+MX 300
+TA1 Form Forged
+CG7
+Rac MB
+FT Worth Black
+FT Worth White
+Prodi G Junior
+ZX5
+SIM Gloire
+2022 X
+Prime 11
+0317 ST Milled Blades Chrome
+Pro 241
+Prowler VT
+Apex Ai300
+S3 Max
+2015 Big Bertha Womens
+Hot Launch
+AMP-D
+Icon Black
+King Forged Tec
+Steelhead XR Pro
+G1X
+Hot Launch 2
+Hot Launch 2 Iron-Wood
+FG Tour V2
+RocketBladez 2.0
+HB Womens
+Tour B JGR HF2
+Lady Cobra
+Launcher
+X2 Hot Pro
+845S EVO V-31
+Idea Pro Black CB1
+Idea Tech A4 OS
+Staff Ci6
+CG7 Tour
+Idea Tech V4 Forged
+VR S Covert
+J36 Cavity Back
+XL Womens
+P790 TI
+Hot Launch E521 Iron-Wood
+X Black
+Exotics E721
+Air X
+Stealth HD
+0311 XP GEN5 Xtreme Dark
+Kalea Premier
+Z Forged II
+2021 T200 Black
+Apex Pro 24
+IC-602
+0311 XP GEN6 Double Black
+Exotics XCG4
+Vapor Pro Combo
+CG Red
+King Forged Tour
+LB 280
+King F8
+KING BLK Forged Tec One Length
+C300
+0311 P GEN2 Xtreme Dark
+0311 XF GEN2 Xtreme Dark
+CPR
+Hot Launch 3 Iron-Wood
+Bazooka Platinum Iron-Wood
+F-Max Superlite
+Apex Pro Smoke 19
+Z-Forged
+CNCPT-02
+JPX 919 Hot Metal Pro
+845CS Silverback
+CXI
+XL
+D100 ES
+Bazooka Jmax Ironwood
+Miscela
+S2H2
+Tight Lies
+755 Forged
+Idea Tech A4
+Rac TP MB Smoke
+Burner Tour
+S3 Pro Forged CB
+Lady Edge
+TA2
+J36 Pocket Cavity
+Pro CB
+Z 545
+MP-20 MMC
+T-Rail
+2020 KING Forged Tec One
+F-MAX Airspeed
+KING SpeedZone One Length
+Mavrik Max Womens Lite
+Exotics EXS 220h
+2020 Ultralight
+LTDx
+LTDx One Length
+Launch Pad 2
+12 Ladies
+623-CB Forged
+2023 KING Forged CB
+Big Bertha REVA 23
+0311 P GEN6
+Hot Launch C524
+HALO XL Full-Face
+2025 King Tour Black
+DS-ADAPT MAX JR
+ZXi5
+J38 Dual Pocket Cavity
+CG16 Tour Black Pearl
+CCI Forged
+J15 Cast
+FG Tour V4 Forged
+Burner Superfast 3.0
+MP 69
+CG4 Tour
+Exotics CB Pro Tungsten
+S2 Ladies
+King Forged One Length
+D300
+Gravity Back
+C300 Forged
+0311 T GEN2 Xtreme Dark
+AMP Max
+AMP Cell Orange
+XCG6
+Bloom
+Launcher Womens Series
+Fi5
+Bio Cell Blue
+D100
+Idea A1 Pro
+Idea Tech OS
+MX 11
+Karsten III
+Apex Forged
+BH-5 Offset
+Sasquatch Sumo 2
+Tour Authentic
+Exotics EX-1
+Exotics EX-3
+Carbon CB
+2011 Redline
+Bazooka HT Max Distance
+TA3 Gunmetal Form Forged
+TA4
+Any Model
+Fatshaft II
+Forged
+Z-TX
+845 FS Silver Scot
+Hibore Womens Series
+360 XD
+ZM Forged
+2008 MT Offset
+HT Max-J 5-8 Red
+MP-18 SC
+M Gloire
+KING SpeedZone
+Eleven Ladies
+845 Max
+0311 ST
+PF-2 Forged
+KING MIM Tour
+RAD Speed
+CNCPT CP-04
+Beres 07 4-Star
+0211 ST
+2022 KING Forged Tec OL
+Aerojet
+X2 Hot Plus
+G LE 3
+i530
+G730
+699 v2 Satin
+Qi HL
+JPX 925 Hot Metal
+JPX 925 Hot Metal Pro
+JPX 925 Hot Metal HL
+G440
+CG7 Black
+CG16 Tour Satin Chrome
+Razr Edge
+Legacy Black Forged
+CG2
+King Forged CB
+Defy
+Exotics EXi
+S2 Forged
+Apex Black
+TC-606 Forged
+FG Tour V6
+Prime 8
+CB-1008
+2012 588 CB
+2012 588 MB
+MC-501
+0311 SGI GEN2 Xtreme Dark
+CPR 2
+AMP Forged
+Cobra Oversize Norman Grind
+902 Forged Satin Pearl Chrome
+902 Forged Black PVD
+CB Xtreme Forged
+Idea CMB
+IE-06
+TW747 V
+660 Forged
+Forged Pro Combo OS
+845S Oversize Plus
+MP 19
+MP 29
+Launcher LP
+845S Oversize
+845S Titanium Face
+Ovation 2
+R540 XD
+Rac MB TP
+Staff Ci7
+TC29 Midsize
+Ti Bubble 2
+Tigress
+T-Zoid Pro II Forged
+Viper MS
+X-12 Pro Series
+S59 Tour
+Apex Edge Pro
+FG Tour Forged
+Apex PC
+BH-5
+i-701 Tour
+Bazooka Geomax 2
+Bazooka QLS
+Staff Di7
+2009 SZ Womens
+2009 SZ Senior
+Staff Di9 Distance
+Victory Red Pro Blade
+Razr X Muscleback
+2012 CG Black
+792 VAS
+DCI 981 SL
+TA3 Form Forged
+TA7 Tour
+845
+Eye 2 + No +
+J36 Blades
+CG Tour
+Vapor Fly Pro
+HT Max-J 3-5 Red
+2014 APEX MB
+X Hot 19 Womens
+Hot Launch 4
+AF-503
+F-MAX Airspeed Womens
+Eleven
+2018 Solaire
+JPX 921 Tour
+639 CB Forged
+TR20 P
+Fly-XL Womens
+4
+Air X Womens
+0311 P GEN5 Xtreme Dark
+0317 CB
+Darkspeed One Length
+2024 Staff Model CB
+2024 Staff Model Blade
+Dynapwr Forged
+0311 XP Gen7
+Exotics C725
+2025 King Forged CB Black
+2025 King Forged MB Black
+Rogue ST Max 24
+DS-ADAPT
+JPX 925 Forged
+Pro S-3
+2025 T200 Black
+2025 P790
+GT 500
+i-506
+Fluid Feel
+i-403AD
+Mashie
+Exotics E8
+Thrive
+J15 Driving Forged
+J15 Cavity Back
+Fly-Z Womens
+J15 Dual Pocket Forged
+RocketBallz Pro
+D200
+2015 CG Black CB
+i-201
+CG1
+CG1 Black Pearl
+Fly-Z XL Womens
+Z 355 Womens
+Exotics EXd
+LE-10 Forged
+C16
+JPX 900 Tour Blade
+XTD Tour A
+VRS Covert X
+MP 55
+King F7 Ladies
+Passing Point Neo 9005G
+716 AP1 Smoke
+Fort Worth HI
+Legacy Forged
+TW737Vn
+J40 Forged Dual Pocket Cavity
+TW737Vs
+Exotics XCG5
+Forged Split Cavity
+Rogue Pro Black
+P-790 Black
+1031 Forged Satin Pearl Chrome
+KING Pro Black
+KING F9 Speedback Womens
+2019 KING Forged MB
+KING Forged CB MB
+718 AP3 Black
+TC-930
+CU Forged
+FC-One Plus Womens
+Deep Red
+CXI L Womens
+CXI SF
+Apex Pro Dot
+Apex MB Raw
+Deep Red II Distance
+AMP Cell Red
+AMP Cell Womens Blue
+680 Forged
+FG51 Tour Blade
+Forged Blades
+XTD Forged
+Bio Cell + Black
+Bio Cell + Blue
+FH-1000 Forged
+H-40 Oversize
+J33 Forged Combo
+J33 Forged Blade
+Bazooka Jmax Tour Ironwood
+Karsten I
+Pro Staff OS
+Rekin Super 10 Tour
+Rac Forged CB TP
+Revolution
+Staff RM Midsize Forged
+Slingshot Tour
+Staff Di5 Hybrid
+Staff Midsize
+Titanium 100
+Tight Lies GT
+Tour Classic
+Tour Premium Forged
+Quadpro
+T-Zoid Sure
+V-Foil M455
+R7 Draw Hybrid
+Apex 50
+Bazooka HT Max
+Staff Ci9
+Apex Redline
+Apex FTX
+MT Pro C Chrome
+Hibore Bloom XLI Womens
+Pro Black MB
+MX 1000
+S3 Pro Forged MB
+Staff Di11
+Z Star
+AMP Womens
+TA6 Womens
+Tour
+Beres IC-01
+Beres IS-02
+Firesole Tour
+VHL
+X 31
+Pro MB
+FP 2
+3DX Hybrid
+0311 Xtreme Dark
+Sterling Single Length
+Moxie G 8-9 Year Old
+VRS Covert Forged
+F-Max One Length
+R5 XL
+Fly-Z S
+TW-X
+MP-20 SEL
+98135
+MB-101
+TC-201
+Launch Pad
+Beres IE-05
+MODB-1
+T200 Black
+Hot Launch C521
+699
+CNCPT CP-03
+RF Proto Limited Edition
+Gloire
+Profile SGI
+PI-401
+0311 T GEN4
+TWORLD GS
+Tour B X-CBP
+Hot Launch C522
+KING Forged Tec X
+623-MB Forged
+Tune 01 CB
+All Black
+PR-202
+Apex 21 Black
+JPX 923 Tour
+0211 XCOR2 Xtreme Dark
+0317 ST Milled Blades XD
+2023 KING Forged MB
+Exotics Pro 723
+2021 T100S Black
+Dark Speed
+Darkspeed Womens
+2023 Air X Womens
+2023 Air X
+2023 Idea
+13
+13 Womens
+MB-101A
+Black Ops
+0311 P Gen7 Xtreme Dark
+0311 XP Gen7 Xtreme Dark
+Exotics E725
+Exotics X725
+DS-ADAPT MAX Women's
+ZXi7
+ZXi4
+Elyte
+Elyte X
+Elyte Max Fast
+Elyte HL
+JPX 925 Forged Black
+Reva Rise
+2025 DYNAPWR Max
+2025 DYNAPWR
+2025 T100 Black
+Prime Royal Edition 6 Ladies
+Prime Royal Edition 6
+E525
+Hot Launch X525 Ironwood
+Prime 13
