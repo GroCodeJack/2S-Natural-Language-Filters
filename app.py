@@ -57,7 +57,7 @@ def classify_query_is_model_specific(user_query: str) -> bool:
     )
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # or any small classification model
+            model="gpt-4.1",  # or any small classification model
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query}
@@ -129,7 +129,7 @@ Now respond based on the user's input.
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",  # or whichever model you prefer
+            model="gpt-4.1",  # or whichever model you prefer
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query}
@@ -165,7 +165,7 @@ def build_url_with_llm(user_query: str, system_prompt: str, mapped_models: str, 
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",  # or "gpt-3.5-turbo", etc.
+            model="gpt-4.1",  # or "gpt-3.5-turbo", etc.
             messages=[
                 # The system prompt with appended mapped_models context
                 {"role": "system", "content": final_system_prompt},
