@@ -11,7 +11,7 @@ import glob, json
 app = Flask(__name__)
 
 # Uncomment to re‑enable rate limiting
-# limiter = Limiter(get_remote_address, app=app, default_limits=["350 per hour"], storage_uri="memory://")
+limiter = Limiter(get_remote_address, app=app, default_limits=["350 per hour"], storage_uri="memory://")
 
 # ------- GLOBAL STATE (simple demo cache) ------- #
 last_products: list = []
@@ -437,6 +437,18 @@ HTML_TEMPLATE = """
 
             document.getElementById('club_type')
                     .addEventListener('change', () => { idx = 0; updatePh(); });
+        });
+            document.addEventListener("DOMContentLoaded", () => {
+            const textarea = document.getElementById("user_query");
+            const form = textarea.closest("form");
+
+            textarea.addEventListener("keydown", function(e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();  // prevent newline
+                    showSpinner();       // show spinner
+                    form.submit();       // trigger the form submission
+                }
+            });
         });
     </script>
 </head>
