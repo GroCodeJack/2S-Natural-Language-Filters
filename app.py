@@ -364,6 +364,21 @@ HTML_TEMPLATE = """
             padding: 1em;
             text-align: center;
             background: #fff;
+
+            /* fade-in setup */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .tile.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tile:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
         }
 
         .tile img {
@@ -389,6 +404,18 @@ HTML_TEMPLATE = """
         }
         .generated-url a { color:#b71c1c; text-decoration:none; }
         .generated-url a:hover { text-decoration:underline; }
+
+        /* ---------- LOADER ---------- */
+        @keyframes spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner-img {
+            width: 90px;
+            height: 90px;
+            animation: spin 1.3s linear infinite;
+        }
     </style>
 
     <script>
@@ -450,6 +477,15 @@ HTML_TEMPLATE = """
                 }
             });
         });
+        /* ---------- TILE FADE-IN ---------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach((tile, idx) => {
+                setTimeout(() => {
+                    tile.classList.add('fade-in');
+                }, idx * 80);     // stagger by 80 ms per tile
+            });
+        });
     </script>
 </head>
 
@@ -463,7 +499,7 @@ HTML_TEMPLATE = """
                 background:rgba(255,255,255,0.7);z-index:9999;">
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);
                     text-align:center;">
-            <img src="https://media3.giphy.com/media/sSgvbe1m3n93G/giphy.gif" width="64" height="64">
+            <img src="https://i.postimg.cc/yxqzbNFM/spinner.png" class="spinner-img" alt="Loading spinner">
             <p>Loading...</p>
         </div>
     </div>
