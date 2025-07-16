@@ -18,6 +18,7 @@ last_products: list = []
 last_query: str = ""
 last_url: str = ""
 last_club_type: str = ""
+last_total = None
 
 # --------------- OPENAI --------------- #
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -196,6 +197,15 @@ def scrape_2ndswing(url: str):
     try:
         soup = BeautifulSoup(requests.get(url, headers=headers, timeout=10).text, "html.parser")
         all_data = []
+        total_count = None
+        # capture total count
+        count_tag = soup.select_one('p.toolbar-amount span.toolbar-number:last-child')
+        if count_tag:
+            try:
+                total_count = int(count_tag.get_text(strip=True).replace(',', ''))
+            except ValueError:
+                total_count = None
+
         for card in soup.select("div.product-box.product-item-info"):
             brand = card.find("div", class_="product-brand")
             brand = brand.get_text(strip=True) if brand else "N/A"
@@ -238,17 +248,17 @@ def scrape_2ndswing(url: str):
                 "parent_model": parent_model,
                 "attrs": attrs,
             })
-        return all_data
+        return all_data, total_count
     except Exception as e:
         print("Scrape error:", e)
-        return []
+        return [], None
 
 # ----------------------------------------------------------------------------
 # FLASK ROUTE
 # ----------------------------------------------------------------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global last_products, last_query, last_url, last_club_type
+    global last_products, last_query, last_url, last_club_type, last_total
 
     if request.method == "POST":
         user_query = request.form.get("user_query", "")
@@ -264,23 +274,24 @@ def index():
             system_prompt = "Build a URL for the chosen club type."
 
         generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)
-        product_data = scrape_2ndswing(generated_url)
+        product_data, total_count = scrape_2ndswing(generated_url)
 
-        last_query, last_url, last_products, last_club_type = user_query, generated_url, product_data, club_type
+        last_query, last_url, last_products, last_club_type, last_total = user_query, generated_url, product_data, club_type, total_count
         return redirect(url_for("index"))
 
     # GET → render results then clear cache
-    local_query, local_url, local_products, local_type = last_query, last_url, last_products, last_club_type
-    last_query = last_url = last_club_type = ""; last_products = []
+    local_query, local_url, local_products, local_type, local_total = last_query, last_url, last_products, last_club_type, last_total
+    last_query = last_url = last_club_type = ""; last_products = []; last_total = None
 
     return render_template_string(HTML_TEMPLATE,
                                   user_query=local_query,
                                   generated_url=local_url,
                                   products=local_products,
                                   club_type=local_type,
+                                  total_count=local_total,
                                   VISIBLE_ATTRS=VISIBLE_ATTRS,
-                                  placeholders_json=json.dumps(PLACEHOLDERS))    # <‑‑ NEW)
-    
+                                  placeholders_json=json.dumps(PLACEHOLDERS))
+
 
 # ----------------------------------------------------------------------------
 # INLINE HTML TEMPLATE
@@ -293,11 +304,12 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
+        .result-count { font-weight:600; margin:1em auto; max-width:1000px; }
         /* ---------- RESET ---------- */
         * { box-sizing: border-box; }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'urw-din', sans-serif;
             margin: 2em;
             font-size: 16px;
         }
@@ -325,6 +337,7 @@ HTML_TEMPLATE = """
             border-radius: 8px;
             border: 1px solid #ccc;
             resize: vertical;
+            font-size: 1em;
         }
 
         :root {
@@ -490,8 +503,12 @@ HTML_TEMPLATE = """
 </head>
 
 <body>
-    <h1 style="text-align:center;">Natural Language Golf Search</h1>
-    <p style="text-align:center;">Enter your search in plain English and let us do the rest!</p>
+    <div style="text-align:center; margin-bottom:0.5em;">
+        <img src="https://i.postimg.cc/nrSJ8C3T/2s-nls-logo.png"
+             alt="2S Natural Language Golf Search"
+             style="max-width:260px;width:60%;height:auto;">
+    </div>
+    <h3 style="text-align:center; font-family:'urw-din',sans-serif; font-weight:400; font-style:normal;">Enter your search in plain English and let us do the rest!</h3>
 
     <!-- ---------- LOADING SPINNER ---------- -->
     <div id="spinner-overlay"
@@ -528,6 +545,11 @@ HTML_TEMPLATE = """
             <strong>Generated URL:</strong>
             <a href="{{ generated_url }}" target="_blank">{{ generated_url }}</a>
         </div>
+    {% endif %}
+
+    <!-- ---------- RESULTS INFO ---------- -->
+    {% if total_count %}
+        <div class="result-count">Total products found: {{ total_count }}</div>
     {% endif %}
 
     <!-- ---------- RESULTS GRID ---------- -->
