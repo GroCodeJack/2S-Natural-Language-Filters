@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Natural Language Golf Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        .result-count { font-weight:600; margin:1em auto; max-width:1000px; }
+        /* ---------- RESET ---------- */
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'urw-din', sans-serif;
+            margin: 2em;
+            font-size: 16px;
+        }
+
+        /* ---------- FORM ---------- */
+        form {
+            margin-bottom: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #club_type {
+            padding: 0.6em 1em;
+            min-width: 200px;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .search-textarea {
+            min-height: 100px;
+            padding: 0.8em;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            font-size: 1em;
+        }
+
+        :root {
+            --ph-opacity: 1;                /* placeholder fully visible by default */
+        }
+
+        .search-textarea::placeholder {
+            opacity: var(--ph-opacity);
+            transition: opacity 0.25s ease; /* animate only the placeholder text */
+            color: #888;
+        }
+
+
+        .search-button {
+            padding: 0.7em 1.2em;
+            border: none;
+            border-radius: 8px;
+            background: #b71c1c;
+            color: #fff;
+            cursor: pointer;
+            width: 160px;
+            align-self: center;
+        }
+
+        /* ---------- PRODUCT GRID ---------- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1em;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tile {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 1em;
+            text-align: center;
+            background: #fff;
+
+            /* fade-in setup */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .tile.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tile:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .tile img {
+            width: 100%;
+            max-height: 160px;
+            object-fit: contain;
+            margin-bottom: 0.5em;
+        }
+
+        .price-text {
+            color: #b71c1c;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+
+        .attr { font-size: 0.9em; color: #444; }
+
+        /* ---------- GENERATED URL ---------- */
+        .generated-url {
+            word-wrap: break-word;
+            max-width: 600px;
+            margin: 2em auto;
+        }
+        .generated-url a { color:#b71c1c; text-decoration:none; }
+        .generated-url a:hover { text-decoration:underline; }
+
+        /* ---------- LOADER ---------- */
+        @keyframes spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner-img {
+            width: 90px;
+            height: 90px;
+            animation: spin 1.3s linear infinite;
+        }
+    </style>
+
+    <script>
+        /* ---------- SPINNER ---------- */
+        function showSpinner() {
+            document.getElementById('spinner-overlay').style.display = 'block';
+        }
+
+        /* ---------- PLACEHOLDER ROTATOR ---------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const BANKS = JSON.parse('{{ placeholders_json|safe }}');
+
+            // map dropdown text → placeholder file slug
+            const SLUG = {
+                'Driver':        'driver',
+                'Fairway Woods': 'fairway',
+                'Hybrids':       'hybrid',
+                'Iron Sets':     'ironset',
+                'Wedges':        'wedge',
+                'Putters':       'putter',
+                'Single Irons':  'singleiron'
+            };
+
+            let idx = 0;
+
+            function updatePh() {
+                const sel = document.getElementById('club_type');
+                const ta  = document.getElementById('user_query');
+                const key = SLUG[sel.value] || 'driver';
+                const arr = BANKS[key] || [];
+                if (!arr.length) return;
+
+                /* fade placeholder out */
+                ta.style.setProperty('--ph-opacity', '0');
+
+                setTimeout(() => {
+                    ta.placeholder = arr[idx % arr.length];   // swap text
+                    ta.style.setProperty('--ph-opacity', '1'); // fade back in
+                    idx = (idx + 1) % arr.length;
+                }, 250);  // matches the CSS 0.25 s
+            }
+
+
+            updatePh();                     // initial
+            setInterval(updatePh, 5000);    // rotate
+
+            document.getElementById('club_type')
+                    .addEventListener('change', () => { idx = 0; updatePh(); });
+        });
+            document.addEventListener("DOMContentLoaded", () => {
+            const textarea = document.getElementById("user_query");
+            const form = textarea.closest("form");
+
+            textarea.addEventListener("keydown", function(e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();  // prevent newline
+                    showSpinner();       // show spinner
+                    form.submit();       // trigger the form submission
+                }
+            });
+        });
+        /* ---------- TILE FADE-IN ---------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach((tile, idx) => {
+                setTimeout(() => {
+                    tile.classList.add('fade-in');
+                }, idx * 80);     // stagger by 80 ms per tile
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div style="text-align:center; margin-bottom:0.5em;">
+        <img src="https://i.postimg.cc/nrSJ8C3T/2s-nls-logo.png"
+             alt="2S Natural Language Golf Search"
+             style="max-width:260px;width:60%;height:auto;">
+    </div>
+    <h3 style="text-align:center; font-family:'urw-din',sans-serif; font-weight:400; font-style:normal;">Enter your search in plain English and let us do the rest!</h3>
+
+    <!-- ---------- LOADING SPINNER ---------- -->
+    <div id="spinner-overlay"
+         style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+                background:rgba(255,255,255,0.7);z-index:9999;">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);
+                    text-align:center;">
+            <img src="https://i.postimg.cc/yxqzbNFM/spinner.png" class="spinner-img" alt="Loading spinner">
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- ---------- SEARCH FORM ---------- -->
+    <form method="POST" onsubmit="showSpinner()">
+        <label for="club_type"><strong>Select Club Type:</strong></label>
+        <select id="club_type" name="club_type">
+            {% for ct in VISIBLE_ATTRS.keys() %}
+                <option value="{{ ct }}" {% if club_type == ct %}selected{% endif %}>{{ ct }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="user_query"><strong>Enter Your Search:</strong></label>
+        <textarea id="user_query"
+                  name="user_query"
+                  class="search-textarea"
+                  placeholder="e.g. Titleist left-handed driver regular flex under $400">{{ user_query }}</textarea>
+
+        <button type="submit" class="search-button">Search</button>
+    </form>
+
+    <!-- ---------- GENERATED URL ---------- -->
+    {% if generated_url %}
+        <div class="generated-url">
+            <strong>Generated URL:</strong>
+            <a href="{{ generated_url }}" target="_blank">{{ generated_url }}</a>
+        </div>
+    {% endif %}
+
+    <!-- ---------- RESULTS INFO ---------- -->
+    {% if total_count %}
+        <div class="result-count">Total products found: {{ total_count }}</div>
+    {% endif %}
+
+    <!-- ---------- RESULTS GRID ---------- -->
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="tile">
+                    <a href="{{ product.url }}" target="_blank" style="text-decoration:none;color:inherit;">
+                        <img src="{{ product.img_url }}" alt="Product Image">
+                        <h3>{{ product.brand }} {{ product.model }}</h3>
+
+                        {% if product.parent_model %}
+                            <div class="attr"><p>PARENT MODEL</p></div>
+                        {% else %}
+                            <div class="price-text">{{ product.price }}</div>
+                            <div class="attr">
+                                <p>Condition: {{ product.condition }}</p>
+                                {% for key in VISIBLE_ATTRS.get(club_type, []) %}
+                                    {% if product.attrs.get(key) %}
+                                        <p>{{ key|capitalize }}: {{ product.attrs[key] }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html> 
