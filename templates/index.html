@@ -130,6 +130,106 @@
             height: 90px;
             animation: spin 1.3s linear infinite;
         }
+
+        /* ---------- TOGGLE SWITCH ---------- */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #b71c1c;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* ---------- TOOLTIP ---------- */
+        .tooltip {
+            position: absolute;
+            top: -5px;
+            right: -35px;
+        }
+
+        .tooltip-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #666;
+            color: white;
+            text-align: center;
+            line-height: 18px;
+            font-size: 12px;
+            cursor: help;
+        }
+
+        .tooltip-content {
+            visibility: hidden;
+            width: 320px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            right: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .tooltip-content::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 
     <script>
@@ -178,6 +278,16 @@
 
             document.getElementById('club_type')
                     .addEventListener('change', () => { idx = 0; updatePh(); });
+        });
+
+        /* ---------- ARCHITECTURE TOGGLE ---------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('architecture_toggle');
+            const label = document.getElementById('architecture_label');
+            
+            toggle.addEventListener('change', () => {
+                label.textContent = toggle.checked ? 'New' : 'Old';
+            });
         });
             document.addEventListener("DOMContentLoaded", () => {
             const textarea = document.getElementById("user_query");
@@ -236,6 +346,33 @@
                   name="user_query"
                   class="search-textarea"
                   placeholder="e.g. Titleist left-handed driver regular flex under $400">{{ user_query }}</textarea>
+
+        <!-- Architecture Toggle -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0;">
+            <label for="architecture_toggle" style="font-size: 0.9em; color: #666;">Architecture:</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="architecture_toggle" name="use_new_architecture" 
+                       {% if use_new_architecture %}checked{% endif %}>
+                <span class="slider"></span>
+            </label>
+            <span id="architecture_label" style="font-size: 0.9em; color: #666;">
+                {% if use_new_architecture %}New{% else %}Old{% endif %}
+            </span>
+            <div class="tooltip">
+                <span class="tooltip-icon">?</span>
+                <div class="tooltip-content">
+                    <strong>Old Architecture (Default):</strong><br>
+                    • Uses traditional 3-step LLM process<br>
+                    • Extracts and injects model lists for model-specific queries<br>
+                    • Higher token usage but more precise model matching<br><br>
+                    <strong>New Architecture:</strong><br>
+                    • Streamlined 2-step process for Drivers<br>
+                    • Uses global search for model-specific Driver queries<br>
+                    • Lower token usage and faster processing<br>
+                    • Other club types still use traditional process
+                </div>
+            </div>
+        </div>
 
         <button type="submit" class="search-button">Search</button>
     </form>

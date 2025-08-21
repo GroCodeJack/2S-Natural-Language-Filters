@@ -20,27 +20,48 @@ last_query: str = ""
 last_url: str = ""
 last_club_type: str = ""
 last_total = None
+last_use_new_architecture: bool = False
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global last_products, last_query, last_url, last_club_type, last_total
+    global last_products, last_query, last_url, last_club_type, last_total, last_use_new_architecture
 
     if request.method == "POST":
         user_query = request.form.get("user_query", "")
         club_type = request.form.get("club_type", "Driver")
+        use_new_architecture = request.form.get("use_new_architecture") == "on"
 
-        # Check if query is model-specific and extract models if needed
+        # Check if query is model-specific
+        is_model_specific = classify_query_is_model_specific(user_query)
+
+        # Determine prompt directory based on architecture selection
+        prompt_dir = "prompts_v2" if use_new_architecture else "prompts_v1"
+        
+        # Handle model extraction based on architecture
         mapped_models = ""
-        if classify_query_is_model_specific(user_query):
-            mapped_models = extract_and_map_models(user_query, club_type)
+        if use_new_architecture:
+            # New architecture: skip model extraction for ALL club types (use q= parameter instead)
+            pass
+        else:
+            # Old architecture: extract models for all model-specific queries
+            if is_model_specific:
+                mapped_models = extract_and_map_models(user_query, club_type)
 
-        # Load system prompt for the club type
-        prompt_path = os.path.join("textdocs", "prompts", CLUB_PROMPT_FILES.get(club_type, "driver.txt"))
+        # Load system prompt for the club type from appropriate directory
+        prompt_path = os.path.join("textdocs", prompt_dir, CLUB_PROMPT_FILES.get(club_type, "driver.txt"))
         try:
             with open(prompt_path, "r") as f:
                 system_prompt = f.read()
         except Exception:
             system_prompt = "Build a URL for the chosen club type."
+
+        # For new architecture, prepend classifier result for all club types
+        if use_new_architecture:
+            prefix = (
+                f"CLASSIFICATION: {'MODEL_SPECIFIC' if is_model_specific else 'GENERIC'}\n"
+                f"CLUB_TYPE: {club_type}\n"
+            )
+            system_prompt = prefix + system_prompt
 
         # Generate URL and scrape data
         generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)
@@ -52,6 +73,7 @@ def index():
         last_products = product_data
         last_club_type = club_type
         last_total = total_count
+        last_use_new_architecture = use_new_architecture
         
         return redirect(url_for("index"))
 
@@ -61,11 +83,13 @@ def index():
     local_products = last_products
     local_type = last_club_type
     local_total = last_total
+    local_use_new_arch = last_use_new_architecture
     
     # Clear cache
     last_query = last_url = last_club_type = ""
     last_products = []
     last_total = None
+    last_use_new_architecture = False
 
     return render_template("index.html",
                           user_query=local_query,
@@ -73,6 +97,7 @@ def index():
                           products=local_products,
                           club_type=local_type,
                           total_count=local_total,
+                          use_new_architecture=local_use_new_arch,
                           VISIBLE_ATTRS=VISIBLE_ATTRS,
                           placeholders_json=json.dumps(PLACEHOLDERS))
 
