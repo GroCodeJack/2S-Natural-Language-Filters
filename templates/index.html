@@ -11,8 +11,13 @@
 
         body {
             font-family: 'urw-din', sans-serif;
-            margin: 2em;
+            margin: 0;
             font-size: 16px;
+            background-color: #f9f9f9;
+        }
+
+        .main-content {
+            padding: 2em;
         }
 
         /* ---------- FORM ---------- */
@@ -230,6 +235,47 @@
             visibility: visible;
             opacity: 1;
         }
+
+        /* ---------- TOP NAVIGATION ---------- */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0.75em 2em;
+            display: flex;
+            align-items: center;
+            gap: 2em;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-logo {
+            height: 32px;
+            width: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2em;
+        }
+
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #333;
+        }
+
+        .nav-link.active {
+            color: #b71c1c;
+            font-weight: 600;
+        }
     </style>
 
     <script>
@@ -314,12 +360,18 @@
 </head>
 
 <body>
-    <div style="text-align:center; margin-bottom:0.5em;">
+    <!-- ---------- TOP NAVIGATION ---------- -->
+    <div class="top-nav">
         <img src="https://i.postimg.cc/nrSJ8C3T/2s-nls-logo.png"
              alt="2S Natural Language Golf Search"
-             style="max-width:260px;width:60%;height:auto;">
+             class="nav-logo">
+        <div class="nav-links">
+            <a href="/" class="nav-link active">Natural Language Search</a>
+            <a href="/fitting" class="nav-link">Fitting Mode</a>
+        </div>
     </div>
-    <h3 style="text-align:center; font-family:'urw-din',sans-serif; font-weight:400; font-style:normal;">Enter your search in plain English and let us do the rest!</h3>
+
+    <div class="main-content">
 
     <!-- ---------- LOADING SPINNER ---------- -->
     <div id="spinner-overlay"
@@ -417,5 +469,6 @@
             {% endfor %}
         </div>
     {% endif %}
+    </div>
 </body>
 </html> 

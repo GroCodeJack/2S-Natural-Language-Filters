@@ -118,4 +118,25 @@ def build_url_with_llm(user_query: str, system_prompt: str, mapped_models: str) 
         final_url = f"{base_url}{sep}{model_chunk.lstrip('&')}" if "?" in base_url else f"{base_url}?{model_chunk.lstrip('&')}"
     else:
         final_url = base_url
-    return final_url 
+    return final_url
+
+def chat_with_llm(messages: list, system_prompt: str = "") -> str:
+    """General chat function for turn-based conversation with LLM."""
+    try:
+        # Build the messages array
+        chat_messages = []
+        if system_prompt:
+            chat_messages.append({"role": "system", "content": system_prompt})
+        
+        chat_messages.extend(messages)
+        
+        resp = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            messages=chat_messages,
+            temperature=0.7,  # Slightly higher for more natural conversation
+            max_tokens=800,   # Allow longer responses for fitting conversations
+        )
+        return resp.choices[0].message.content.strip()
+    except Exception as e:
+        print("OpenAI chat error:", e)
+        return "I'm sorry, I'm having trouble processing your request right now. Please try again." 
