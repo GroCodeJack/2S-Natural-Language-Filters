@@ -16,6 +16,16 @@ limiter = Limiter(get_remote_address, app=app, default_limits=[RATE_LIMIT], stor
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    # Track page view for all requests
+    if os.environ.get("MIXPANEL_TOKEN"):
+        mp = mixpanel.Mixpanel(os.environ.get("MIXPANEL_TOKEN"))
+        mp.track(request.remote_addr, 'Page View', {
+            'page': 'home',
+            'method': request.method,
+            'user_agent': request.headers.get('User-Agent', ''),
+            'referrer': request.headers.get('Referer', '')
+        })
+
     # Initialize default values for GET requests
     user_query = ""
     generated_url = ""
@@ -67,6 +77,17 @@ def index():
         generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)
         products, total_count, applied_filters, next_page_url = scrape_2ndswing(generated_url)
 
+        # Track search with Mixpanel - exactly the 5 things requested
+        if os.environ.get("MIXPANEL_TOKEN"):
+            mp = mixpanel.Mixpanel(os.environ.get("MIXPANEL_TOKEN"))
+            mp.track(request.remote_addr, 'Search Performed', {
+                'club_type': club_type,                    # a) club type
+                'user_query': user_query,                  # b) user's search query  
+                'generated_url': generated_url,            # c) URL that's generated
+                'applied_filters': applied_filters,        # d) filters used in search
+                'product_count': total_count or 0          # e) number of products found
+            })
+
     return render_template("index.html",
                           user_query=user_query,
                           generated_url=generated_url,
@@ -78,6 +99,7 @@ def index():
                           next_page_url=next_page_url,
                           VISIBLE_ATTRS=VISIBLE_ATTRS,
                           placeholders_json=json.dumps(PLACEHOLDERS))
+
 
 @app.route("/load_more", methods=["POST"])
 @limiter.limit(RATE_LIMIT)
