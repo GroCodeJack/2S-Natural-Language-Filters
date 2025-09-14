@@ -3,6 +3,7 @@ import json
 from flask import Flask, request, redirect, url_for, render_template, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import mixpanel
 
 # Import our custom modules
 from config import VISIBLE_ATTRS, PLACEHOLDERS, CLUB_PROMPT_FILES, RATE_LIMIT, FLASK_PORT, FLASK_DEBUG
