@@ -110,14 +110,81 @@
 
         .attr { font-size: 0.9em; color: #444; }
 
-        /* ---------- GENERATED URL ---------- */
-        .generated-url {
-            word-wrap: break-word;
-            max-width: 600px;
-            margin: 2em auto;
+        /* ---------- CTA & FILTERS ---------- */
+        .cta-and-filters {
+            max-width: 1000px;
+            margin: 1.5em auto 1.5em auto;
+            padding: 1em;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 10px;
         }
-        .generated-url a { color:#b71c1c; text-decoration:none; }
-        .generated-url a:hover { text-decoration:underline; }
+
+        .cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 16px;
+            justify-content: space-between;
+        }
+
+        .view-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #b71c1c;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+        .view-button:hover { background: #a01818; }
+
+        .view-button svg { width: 18px; height: 18px; fill: currentColor; }
+
+        .filter-toggle {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .filter-toggle:hover { color: #333; }
+        .filter-toggle svg { width: 16px; height: 16px; transition: transform 0.2s ease; }
+        .filter-toggle.expanded svg { transform: rotate(180deg); }
+
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .filters-container.expanded {
+            max-height: 200px;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 6px 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        .chip-label { color: #666; font-weight: 600; }
 
         /* ---------- LOADER ---------- */
         @keyframes spin {
@@ -310,6 +377,121 @@
                 }, idx * 80);     // stagger by 80 ms per tile
             });
         });
+
+        /* ---------- FILTER TOGGLE ---------- */
+        function toggleFilters() {
+            const toggle = document.getElementById('filter-toggle');
+            const container = document.getElementById('filters-container');
+            
+            toggle.classList.toggle('expanded');
+            container.classList.toggle('expanded');
+        }
+
+        /* ---------- INFINITE SCROLL ---------- */
+        let isLoading = false;
+        let nextPageUrl = '{{ next_page_url }}';
+        let currentClubType = '{{ club_type }}';
+        let visibleAttrs = {};
+
+        function createProductTile(product) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            
+            let attributesHtml = '';
+            if (!product.parent_model) {
+                const clubAttrs = visibleAttrs[currentClubType] || [];
+                
+                for (const key of clubAttrs) {
+                    if (product.attrs[key]) {
+                        attributesHtml += '<p>' + key.charAt(0).toUpperCase() + key.slice(1) + ': ' + product.attrs[key] + '</p>';
+                    }
+                }
+            }
+            
+            tile.innerHTML = `
+                <a href="${product.url}" target="_blank" style="text-decoration:none;color:inherit;">
+                    <img src="${product.img_url}" alt="Product Image">
+                    <h3>${product.brand} ${product.model}</h3>
+                    ${product.parent_model ? 
+                        '<div class="attr"><p>PARENT MODEL</p></div>' : 
+                        `<div class="price-text">${product.price}</div>
+                         <div class="attr">
+                             <p>Condition: ${product.condition}</p>
+                             ${attributesHtml}
+                         </div>`
+                    }
+                </a>
+            `;
+            
+            return tile;
+        }
+
+        function loadMoreProducts() {
+            if (isLoading || !nextPageUrl) return;
+            
+            isLoading = true;
+            
+            fetch('/load_more', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    next_url: nextPageUrl,
+                    club_type: currentClubType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error loading more products:', data.error);
+                    return;
+                }
+                
+                const productGrid = document.querySelector('.product-grid');
+                const existingTileCount = productGrid.children.length;
+                
+                data.products.forEach((product, index) => {
+                    const tile = createProductTile(product);
+                    productGrid.appendChild(tile);
+                    
+                    // Stagger the fade-in animation
+                    setTimeout(() => {
+                        tile.classList.add('fade-in');
+                    }, index * 80);
+                });
+                
+                nextPageUrl = data.next_page_url;
+                isLoading = false;
+            })
+            .catch(error => {
+                console.error('Error loading more products:', error);
+                isLoading = false;
+            });
+        }
+
+        function checkScrollPosition() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            
+            // Load more when user is within 200px of the bottom
+            if (scrollTop + windowHeight >= documentHeight - 200) {
+                loadMoreProducts();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Only add scroll listener if there are products and a next page URL
+            if (document.querySelector('.product-grid') && nextPageUrl) {
+                window.addEventListener('scroll', checkScrollPosition);
+            }
+        });
+    </script>
+    
+    <script>
+        // Initialize data from Flask template
+        visibleAttrs = {{ VISIBLE_ATTRS|tojson|safe }};
     </script>
 </head>
 
@@ -377,11 +559,30 @@
         <button type="submit" class="search-button">Search</button>
     </form>
 
-    <!-- ---------- GENERATED URL ---------- -->
+    <!-- ---------- CTA & FILTERS ---------- -->
     {% if generated_url %}
-        <div class="generated-url">
-            <strong>Generated URL:</strong>
-            <a href="{{ generated_url }}" target="_blank">{{ generated_url }}</a>
+        <div class="cta-and-filters">
+            <div class="cta-row">
+                <a class="view-button" href="{{ generated_url }}" target="_blank" rel="noopener noreferrer">
+                    <!-- External link icon -->
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"></path><path d="M5 5h6V3H3v8h2V5zm14 14h-6v2h8v-8h-2v6z"></path></svg>
+                    <span>View on 2ndSwing.com</span>
+                </a>
+            </div>
+            {% if applied_filters and applied_filters|length > 0 %}
+                <button id="filter-toggle" class="filter-toggle" onclick="toggleFilters()">
+                    <span>Applied Filters ({{ applied_filters|length }})</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z"></path></svg>
+                </button>
+                <div id="filters-container" class="filters-container" aria-label="Applied filters">
+                    {% for f in applied_filters %}
+                        <div class="filter-chip">
+                            <span class="chip-label">{{ f.label }}:</span>
+                            <span class="chip-value">{{ f.value }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     {% endif %}
 
@@ -418,4 +619,5 @@
         </div>
     {% endif %}
 </body>
-</html> 
+</html>
+ 

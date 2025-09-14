@@ -8,6 +8,8 @@ def scrape_2ndswing(url: str):
         soup = BeautifulSoup(requests.get(url, headers=headers, timeout=10).text, "html.parser")
         all_data = []
         total_count = None
+        applied_filters = []
+        next_page_url = None
         
         # Capture total count
         count_tag = soup.select_one('p.toolbar-amount span.toolbar-number:last-child')
@@ -16,6 +18,33 @@ def scrape_2ndswing(url: str):
                 total_count = int(count_tag.get_text(strip=True).replace(',', ''))
             except ValueError:
                 total_count = None
+
+        # Capture applied filters (label/value pairs), if present
+        # This targets structures like:
+        # <ol class="items">
+        #   <li class="item"> <span class="filter-label">Brand</span> <span class="filter-value">Ping</span> ...
+        # We scope broadly to avoid missing due to container class name differences.
+        for li in soup.select('ol.items li.item'):
+            label_el = li.select_one('.filter-label')
+            value_el = li.select_one('.filter-value')
+            if label_el and value_el:
+                label = label_el.get_text(strip=True)
+                value = value_el.get_text(strip=True)
+                if label and value:
+                    applied_filters.append({
+                        "label": label,
+                        "value": value,
+                    })
+
+        # Capture next page URL from pagination
+        # Look for the "next" button or page 2 if on page 1
+        next_link = soup.select_one('ul.pages-items li.pages-item-next a.next')
+        if not next_link:
+            # Fallback: look for page 2 link if we're on page 1
+            next_link = soup.select_one('ul.pages-items li.item a[href*="p=2"]')
+        
+        if next_link and next_link.get('href'):
+            next_page_url = next_link['href']
 
         for card in soup.select("div.product-box.product-item-info"):
             brand = card.find("div", class_="product-brand")
@@ -62,7 +91,8 @@ def scrape_2ndswing(url: str):
                 "parent_model": parent_model,
                 "attrs": attrs,
             })
-        return all_data, total_count
+        return all_data, total_count, applied_filters, next_page_url
     except Exception as e:
         print("Scrape error:", e)
-        return [], None 
+        return [], None, [], None
+ 

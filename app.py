@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -14,17 +14,17 @@ app = Flask(__name__)
 # Rate limiting
 limiter = Limiter(get_remote_address, app=app, default_limits=[RATE_LIMIT], storage_uri="memory://")
 
-# Global state (simple demo cache)
-last_products: list = []
-last_query: str = ""
-last_url: str = ""
-last_club_type: str = ""
-last_total = None
-last_use_new_architecture: bool = False
-
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global last_products, last_query, last_url, last_club_type, last_total, last_use_new_architecture
+    # Initialize default values for GET requests
+    user_query = ""
+    generated_url = ""
+    products = []
+    club_type = "Driver"
+    total_count = None
+    use_new_architecture = False
+    applied_filters = []
+    next_page_url = None
 
     if request.method == "POST":
         user_query = request.form.get("user_query", "")
@@ -65,41 +65,42 @@ def index():
 
         # Generate URL and scrape data
         generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)
-        product_data, total_count = scrape_2ndswing(generated_url)
-
-        # Update global state
-        last_query = user_query
-        last_url = generated_url
-        last_products = product_data
-        last_club_type = club_type
-        last_total = total_count
-        last_use_new_architecture = use_new_architecture
-        
-        return redirect(url_for("index"))
-
-    # GET request - render results and clear cache
-    local_query = last_query
-    local_url = last_url
-    local_products = last_products
-    local_type = last_club_type
-    local_total = last_total
-    local_use_new_arch = last_use_new_architecture
-    
-    # Clear cache
-    last_query = last_url = last_club_type = ""
-    last_products = []
-    last_total = None
-    last_use_new_architecture = False
+        products, total_count, applied_filters, next_page_url = scrape_2ndswing(generated_url)
 
     return render_template("index.html",
-                          user_query=local_query,
-                          generated_url=local_url,
-                          products=local_products,
-                          club_type=local_type,
-                          total_count=local_total,
-                          use_new_architecture=local_use_new_arch,
+                          user_query=user_query,
+                          generated_url=generated_url,
+                          products=products,
+                          club_type=club_type,
+                          total_count=total_count,
+                          use_new_architecture=use_new_architecture,
+                          applied_filters=applied_filters,
+                          next_page_url=next_page_url,
                           VISIBLE_ATTRS=VISIBLE_ATTRS,
                           placeholders_json=json.dumps(PLACEHOLDERS))
+
+@app.route("/load_more", methods=["POST"])
+@limiter.limit(RATE_LIMIT)
+def load_more():
+    """Load more products from the next page URL."""
+    try:
+        next_url = request.json.get("next_url")
+        club_type = request.json.get("club_type", "Driver")
+        
+        if not next_url:
+            return jsonify({"error": "No next URL provided"}), 400
+            
+        products, _, _, next_page_url = scrape_2ndswing(next_url)
+        
+        return jsonify({
+            "products": products,
+            "next_page_url": next_page_url,
+            "club_type": club_type
+        })
+        
+    except Exception as e:
+        print("Load more error:", e)
+        return jsonify({"error": "Failed to load more products"}), 500
 
 if __name__ == "__main__":
     app.run(debug=FLASK_DEBUG, port=FLASK_PORT)
