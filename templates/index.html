@@ -624,6 +624,39 @@
         // Initialize data from Flask template
         visibleAttrs = {{ VISIBLE_ATTRS|tojson|safe }};
     </script>
+    
+    <script>
+        // Intercept form submit to work reliably in iframes without cookies
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form[method="POST"]');
+            if (!form) return;
+            
+            form.addEventListener('submit', async (e) => {
+                // If already handling via fetch, prevent normal navigation
+                e.preventDefault();
+                try {
+                    showSpinner();
+                    const formData = new FormData(form);
+                    const resp = await fetch(form.action || '/', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    });
+                    const html = await resp.text();
+                    // Replace full document with server-rendered HTML
+                    document.open();
+                    document.write(html);
+                    document.close();
+                } catch (err) {
+                    console.error('Search submit failed:', err);
+                    // Optionally hide spinner on error
+                    const overlay = document.getElementById('spinner-overlay');
+                    if (overlay) overlay.style.display = 'none';
+                    alert('Something went wrong performing the search. Please try again.');
+                }
+            }, { capture: true });
+        });
+    </script>
 </head>
 
 <body>

@@ -1,6 +1,8 @@
 import os
 import json
-from flask import Flask, request, redirect, url_for, render_template, jsonify, session
+import time
+import uuid
+from flask import Flask, request, redirect, url_for, render_template, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import mixpanel
@@ -11,10 +13,29 @@ from services.llm_service import classify_query_is_model_specific, extract_and_m
 from services.scraper import scrape_2ndswing
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key-change-me")
 
 # Rate limiting
 limiter = Limiter(get_remote_address, app=app, default_limits=[RATE_LIMIT], storage_uri="memory://")
+
+# In-memory, cookie-less results cache for PRG that works in iframes (no third-party cookies)
+# Entries are shown once (popped on first GET) and expire after TTL seconds
+RESULTS_CACHE = {}
+RESULT_TTL_SECS = 300
+
+def _cache_put(data: dict) -> str:
+    rid = uuid.uuid4().hex
+    RESULTS_CACHE[rid] = {"data": data, "ts": time.time()}
+    return rid
+
+def _cache_pop(rid: str):
+    # Remove expired entries opportunistically
+    now = time.time()
+    expired = [k for k, v in RESULTS_CACHE.items() if now - v.get("ts", 0) > RESULT_TTL_SECS]
+    for k in expired:
+        RESULTS_CACHE.pop(k, None)
+    # Pop requested entry (render-once semantics)
+    item = RESULTS_CACHE.pop(rid, None)
+    return item["data"] if item else None
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -90,21 +111,27 @@ def index():
                 'product_count': total_count or 0          # e) number of products found
             })
 
-        # Store results in session and redirect to avoid POST resubmission on refresh (PRG pattern)
-        session['last_results'] = {
-            'user_query': user_query,
-            'generated_url': generated_url,
-            'products': products,
-            'club_type': club_type,
-            'total_count': total_count,
-            'use_new_architecture': use_new_architecture,
-            'applied_filters': applied_filters,
-            'next_page_url': next_page_url,
-        }
-        return redirect(url_for('index'))
+        # Directly render results on POST to ensure reliability in iframes and multi-instance deployments
+        return render_template(
+            "index.html",
+            user_query=user_query,
+            generated_url=generated_url,
+            products=products,
+            club_type=club_type,
+            total_count=total_count,
+            use_new_architecture=use_new_architecture,
+            applied_filters=applied_filters,
+            next_page_url=next_page_url,
+            VISIBLE_ATTRS=VISIBLE_ATTRS,
+            placeholders_json=json.dumps(PLACEHOLDERS)
+        )
 
-    # For GET requests, if we have results stored from the previous POST, render them once then clear
-    stored = session.pop('last_results', None)
+    # For GET requests, if we have a result id from previous POST, render once then clear
+    rid = request.args.get('rid')
+    if rid:
+        stored = _cache_pop(rid)
+    else:
+        stored = None
     if stored:
         return render_template(
             "index.html",
