@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, request, redirect, url_for, render_template, jsonify
+from flask import Flask, request, redirect, url_for, render_template, jsonify, session
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import mixpanel
@@ -11,6 +11,7 @@ from services.llm_service import classify_query_is_model_specific, extract_and_m
 from services.scraper import scrape_2ndswing
 
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key-change-me")
 
 # Rate limiting
 limiter = Limiter(get_remote_address, app=app, default_limits=[RATE_LIMIT], storage_uri="memory://")
@@ -27,7 +28,7 @@ def index():
             'referrer': request.headers.get('Referer', '')
         })
 
-    # Initialize default values for GET requests
+    # Initialize default values
     user_query = ""
     generated_url = ""
     products = []
@@ -89,17 +90,50 @@ def index():
                 'product_count': total_count or 0          # e) number of products found
             })
 
-    return render_template("index.html",
-                          user_query=user_query,
-                          generated_url=generated_url,
-                          products=products,
-                          club_type=club_type,
-                          total_count=total_count,
-                          use_new_architecture=use_new_architecture,
-                          applied_filters=applied_filters,
-                          next_page_url=next_page_url,
-                          VISIBLE_ATTRS=VISIBLE_ATTRS,
-                          placeholders_json=json.dumps(PLACEHOLDERS))
+        # Store results in session and redirect to avoid POST resubmission on refresh (PRG pattern)
+        session['last_results'] = {
+            'user_query': user_query,
+            'generated_url': generated_url,
+            'products': products,
+            'club_type': club_type,
+            'total_count': total_count,
+            'use_new_architecture': use_new_architecture,
+            'applied_filters': applied_filters,
+            'next_page_url': next_page_url,
+        }
+        return redirect(url_for('index'))
+
+    # For GET requests, if we have results stored from the previous POST, render them once then clear
+    stored = session.pop('last_results', None)
+    if stored:
+        return render_template(
+            "index.html",
+            user_query=stored.get('user_query', ""),
+            generated_url=stored.get('generated_url', ""),
+            products=stored.get('products', []),
+            club_type=stored.get('club_type', "Driver"),
+            total_count=stored.get('total_count'),
+            use_new_architecture=stored.get('use_new_architecture', False),
+            applied_filters=stored.get('applied_filters', []),
+            next_page_url=stored.get('next_page_url'),
+            VISIBLE_ATTRS=VISIBLE_ATTRS,
+            placeholders_json=json.dumps(PLACEHOLDERS)
+        )
+
+    # Default empty page render
+    return render_template(
+        "index.html",
+        user_query=user_query,
+        generated_url=generated_url,
+        products=products,
+        club_type=club_type,
+        total_count=total_count,
+        use_new_architecture=use_new_architecture,
+        applied_filters=applied_filters,
+        next_page_url=next_page_url,
+        VISIBLE_ATTRS=VISIBLE_ATTRS,
+        placeholders_json=json.dumps(PLACEHOLDERS)
+    )
 
 
 @app.route("/load_more", methods=["POST"])
