@@ -18,49 +18,158 @@
         /* ---------- FORM ---------- */
         form {
             margin-bottom: 1em;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1em;
+        }
+
+        /* ---------- UNIFIED SEARCH ---------- */
+        .unified-search-container {
             display: flex;
-            flex-direction: column;
-            gap: 1em;
-            max-width: 600px;
+            align-items: stretch;
+            gap: 10px;
+            width: 100%;
             margin: 0 auto;
         }
-
-        #club_type {
-            padding: 0.6em 1em;
-            min-width: 200px;
+        
+        .textarea-container {
+            position: relative;
+            flex: 1;
+            background: white;
+            border: 1px solid #ddd;
             border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: stretch;
+        }
+
+        .textarea-container:focus-within {
+            border-color: #b71c1c;
+            box-shadow: 0 4px 12px rgba(183, 28, 28, 0.15);
+        }
+        
+        .club-dropdown:focus {
+            border-color: #b71c1c;
+            box-shadow: 0 4px 12px rgba(183, 28, 28, 0.15);
+        }
+
+        .club-dropdown {
+            padding: 1em;
+            border: 1px solid #ddd;
+            background: white;
             font-size: 1em;
-        }
-
-        .search-textarea {
-            min-height: 100px;
-            padding: 0.8em;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            resize: vertical;
-            font-size: 1em;
-        }
-
-        :root {
-            --ph-opacity: 1;                /* placeholder fully visible by default */
-        }
-
-        .search-textarea::placeholder {
-            opacity: var(--ph-opacity);
-            transition: opacity 0.25s ease; /* animate only the placeholder text */
-            color: #888;
-        }
-
-
-        .search-button {
-            padding: 0.7em 1.2em;
-            border: none;
-            border-radius: 8px;
-            background: #b71c1c;
-            color: #fff;
             cursor: pointer;
-            width: 160px;
-            align-self: center;
+            outline: none;
+            border-radius: 8px;
+            min-width: 120px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+
+        .search-input {
+            flex: 1;
+            padding: 1em;
+            padding-right: 60px;
+            border: none;
+            font-size: 1em;
+            resize: none;
+            outline: none;
+            min-height: 20px;
+            max-height: 120px;
+            overflow-y: hidden;
+            line-height: 1.4;
+            transition: height 0.2s ease;
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: #888;
+            opacity: var(--ph-opacity, 1);
+            transition: opacity 0.25s ease;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            background: #c41e3a;
+            color: white;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .search-btn:hover {
+            background: #8f1616;
+        }
+
+        .search-btn:active {
+            background: #6d1010;
+        }
+
+        .architecture-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1em;
+            }
+            
+            .unified-search-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .club-dropdown {
+                order: -1;
+                min-width: auto;
+                padding: 1.2em;
+                font-size: 1em;
+            }
+            
+            .textarea-container {
+                order: 1;
+            }
+            
+            .search-input {
+                padding: 1.2em;
+                padding-right: 60px;
+                font-size: 1em;
+                min-height: 24px;
+            }
+            
+            .search-btn {
+                width: 44px;
+                height: 44px;
+                right: 8px;
+                bottom: 8px;
+            }
+            
+            .search-btn svg {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .architecture-toggle-container {
+                margin-top: 1.5em;
+                justify-content: center;
+            }
         }
 
         /* ---------- PRODUCT GRID ---------- */
@@ -339,12 +448,35 @@
                 }, 250);  // matches the CSS 0.25 s
             }
 
-
             updatePh();                     // initial
             setInterval(updatePh, 5000);    // rotate
 
             document.getElementById('club_type')
                     .addEventListener('change', () => { idx = 0; updatePh(); });
+        });
+
+        /* ---------- AUTO-EXPANDING TEXTAREA ---------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const textarea = document.getElementById('user_query');
+            
+            function autoResize() {
+                textarea.style.height = 'auto';
+                const newHeight = Math.min(textarea.scrollHeight, 120);
+                textarea.style.height = newHeight + 'px';
+                
+                // Show scrollbar only when content exceeds max height
+                if (textarea.scrollHeight > 120) {
+                    textarea.style.overflowY = 'auto';
+                } else {
+                    textarea.style.overflowY = 'hidden';
+                }
+            }
+            
+            textarea.addEventListener('input', autoResize);
+            textarea.addEventListener('paste', () => setTimeout(autoResize, 0));
+            
+            // Initial resize in case there's pre-filled content
+            autoResize();
         });
 
         /* ---------- ARCHITECTURE TOGGLE ---------- */
@@ -499,9 +631,8 @@
     <div style="text-align:center; margin-bottom:0.5em;">
         <img src="https://i.postimg.cc/nrSJ8C3T/2s-nls-logo.png"
              alt="2S Natural Language Golf Search"
-             style="max-width:260px;width:60%;height:auto;">
+             style="max-width:182px;width:42%;height:auto;">
     </div>
-    <h3 style="text-align:center; font-family:'urw-din',sans-serif; font-weight:400; font-style:normal;">Enter your search in plain English and let us do the rest!</h3>
 
     <!-- ---------- LOADING SPINNER ---------- -->
     <div id="spinner-overlay"
@@ -516,28 +647,38 @@
 
     <!-- ---------- SEARCH FORM ---------- -->
     <form method="POST" onsubmit="showSpinner()">
-        <label for="club_type"><strong>Select Club Type:</strong></label>
-        <select id="club_type" name="club_type">
-            {% for ct in VISIBLE_ATTRS.keys() %}
-                <option value="{{ ct }}" {% if club_type == ct %}selected{% endif %}>{{ ct }}</option>
-            {% endfor %}
-        </select>
+        <div class="unified-search-container">
+            <select id="club_type" name="club_type" class="club-dropdown">
+                {% for ct in VISIBLE_ATTRS.keys() %}
+                    <option value="{{ ct }}" {% if club_type == ct %}selected{% endif %}>{{ ct }}</option>
+                {% endfor %}
+            </select>
+            
+            <div class="textarea-container">
+                <textarea id="user_query"
+                          name="user_query"
+                          class="search-input"
+                          placeholder="e.g. Titleist left-handed driver regular flex under $400"
+                          rows="1">{{ user_query }}</textarea>
+                
+                <button type="submit" class="search-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
 
-        <label for="user_query"><strong>Enter Your Search:</strong></label>
-        <textarea id="user_query"
-                  name="user_query"
-                  class="search-textarea"
-                  placeholder="e.g. Titleist left-handed driver regular flex under $400">{{ user_query }}</textarea>
-
-        <!-- Architecture Toggle -->
-        <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0;">
-            <label for="architecture_toggle" style="font-size: 0.9em; color: #666;">Architecture:</label>
+        <!-- Architecture Toggle (moved below) -->
+        <div class="architecture-toggle-container">
+            <label for="architecture_toggle">Architecture:</label>
             <label class="toggle-switch">
                 <input type="checkbox" id="architecture_toggle" name="use_new_architecture" 
                        {% if use_new_architecture %}checked{% endif %}>
                 <span class="slider"></span>
             </label>
-            <span id="architecture_label" style="font-size: 0.9em; color: #666;">
+            <span id="architecture_label">
                 {% if use_new_architecture %}New{% else %}Old{% endif %}
             </span>
             <div class="tooltip">
@@ -555,8 +696,6 @@
                 </div>
             </div>
         </div>
-
-        <button type="submit" class="search-button">Search</button>
     </form>
 
     <!-- ---------- CTA & FILTERS ---------- -->
