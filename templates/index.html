@@ -62,7 +62,7 @@
         }
 
         body.initial-state .hero-wrapper {
-            transform: translateY(calc(50vh - 50%));
+            transform: translateY(calc(42vh - 50%));
         }
 
         body.searching .hero-wrapper,
@@ -175,6 +175,15 @@
             background: #6d1010;
         }
 
+        /* ---------- CHAR LIMIT MESSAGE ---------- */
+        .char-limit-msg {
+            display: none;
+            color: #b71c1c;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+        .char-limit-msg.visible { display: block; }
+
         .architecture-toggle-container {
             display: flex;
             align-items: center;
@@ -261,9 +270,9 @@
             text-align: center;
             background: #fff;
 
-            /* fade-in setup */
-            opacity: 0;
-            transform: translateY(10px);
+            /* visible by default; fade-in class will still animate but is not required */
+            opacity: 1;
+            transform: none;
             transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
         }
 
@@ -465,7 +474,6 @@
             width: 120px;
         }
 
-        body.searching .product-grid,
         body.searching .cta-and-filters,
         body.searching .result-count {
             opacity: 0;
@@ -629,6 +637,8 @@
         /* ---------- AUTO-EXPANDING TEXTAREA ---------- */
         document.addEventListener('DOMContentLoaded', () => {
             const textarea = document.getElementById('user_query');
+            const limitMsg = document.getElementById('char_limit_msg');
+            const MAX_CHARS = 170;
             
             function autoResize() {
                 textarea.style.height = 'auto';
@@ -646,8 +656,26 @@
             textarea.addEventListener('input', autoResize);
             textarea.addEventListener('paste', () => setTimeout(autoResize, 0));
             
+            // Enforce character limit with live feedback and hard cap
+            function enforceLimit(e) {
+                if (textarea.value.length > MAX_CHARS) {
+                    textarea.value = textarea.value.slice(0, MAX_CHARS);
+                }
+                const atLimit = textarea.value.length >= MAX_CHARS;
+                limitMsg.classList.toggle('visible', atLimit);
+            }
+            textarea.addEventListener('input', enforceLimit);
+            textarea.addEventListener('paste', () => setTimeout(enforceLimit, 0));
+            textarea.addEventListener('keydown', (e) => {
+                const allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Tab','Meta','Control','Alt','Escape','Enter'];
+                if (textarea.value.length >= MAX_CHARS && !allowed.includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+            
             // Initial resize in case there's pre-filled content
             autoResize();
+            enforceLimit();
         });
 
         /* ---------- ARCHITECTURE TOGGLE ---------- */
@@ -856,6 +884,7 @@
                                   class="search-input"
                                   placeholder="e.g. Titleist left-handed driver regular flex under $400"
                                   rows="1">{{ user_query }}</textarea>
+                        <div id="char_limit_msg" class="char-limit-msg" aria-live="polite">Max 250 characters.</div>
                         
                         <button type="submit" class="search-btn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
