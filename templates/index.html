@@ -5,21 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
-        .result-count { font-weight:600; margin:1em auto; max-width:1000px; }
+        :root {
+            --container-max: 1300px;
+            --container-pad: 16px;
+            --grid-gap: 16px;
+        }
+        .result-count {
+            font-weight: 600;
+            margin: 0.5em auto 0.75em auto;
+            max-width: var(--container-max);
+            transition: opacity 0.3s ease;
+            text-align: left;
+            width: 100%;
+            padding-inline: var(--container-pad);
+        }
         /* ---------- RESET ---------- */
         * { box-sizing: border-box; }
 
         body {
             font-family: 'urw-din', sans-serif;
-            margin: 2em;
+            margin: 0;
             font-size: 16px;
+            background: #fff;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            min-height: 100vh;
+            padding-block: min(6vw, 48px);
+            padding-inline: 15px; /* keep edges flush; inner containers add their own padding */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            transition: padding-top 0.6s ease;
+        }
+
+        body.searching .main-content,
+        body.has-results .main-content {
+            padding-top: 32px;
+        }
+
+        .hero-wrapper {
+            width: min(100%, var(--container-max));
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.6s ease, opacity 0.4s ease;
+            padding-inline: 0;
+        }
+
+        .hero-wrapper form {
+            width: 100%;
+        }
+
+        body.initial-state .hero-wrapper {
+            transform: translateY(calc(50vh - 50%));
+        }
+
+        body.searching .hero-wrapper,
+        body.has-results .hero-wrapper {
+            transform: translateY(0);
+        }
+
+        .hero-logo {
+            max-width: 182px;
+            width: 42%;
+            height: auto;
         }
 
         /* ---------- FORM ---------- */
         form {
-            margin-bottom: 1em;
-            max-width: 1000px;
-            margin: 0 auto;
+            max-width: var(--container-max);
+            margin: 0 auto 1.5em;
+            padding-inline: 0;
         }
 
         /* ---------- UNIFIED SEARCH ---------- */
@@ -174,10 +235,23 @@
         /* ---------- PRODUCT GRID ---------- */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1em;
-            max-width: 1000px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--grid-gap);
+            max-width: var(--container-max);
             margin: 0 auto;
+            transition: opacity 0.3s ease;
+            padding-inline: 0;
+        }
+
+        /* Exact breakpoints as specified */
+        @media (max-width: 1210px) {
+            .product-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 700px) {
+            .product-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 450px) {
+            .product-grid { grid-template-columns: 1fr; }
         }
 
         .tile {
@@ -220,12 +294,14 @@
 
         /* ---------- CTA & FILTERS ---------- */
         .cta-and-filters {
-            max-width: 1000px;
-            margin: 1.5em auto 1.5em auto;
+            width: 100%;
+            max-width: var(--container-max);
+            margin: 0.75em auto 0.75em auto;
             padding: 1em;
             background: #fafafa;
             border: 1px solid #eee;
             border-radius: 10px;
+            transition: opacity 0.3s ease;
         }
 
         .cta-row {
@@ -294,16 +370,107 @@
         }
         .chip-label { color: #666; font-weight: 600; }
 
-        /* ---------- LOADER ---------- */
-        @keyframes spin {
-            0%   { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* ---------- SKELETON LOADER ---------- */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
-        .spinner-img {
-            width: 90px;
-            height: 90px;
-            animation: spin 1.3s linear infinite;
+        .skeleton-grid {
+            display: none;
+            width: 100%;
+            max-width: var(--container-max);
+            margin: 0 auto;
+            gap: var(--grid-gap);
+            padding-inline: var(--container-pad);
+        }
+
+        body.searching .skeleton-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+        @media (max-width: 1210px) {
+            body.searching .skeleton-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 700px) {
+            body.searching .skeleton-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 450px) {
+            body.searching .skeleton-grid { grid-template-columns: 1fr; }
+        }
+
+        .skeleton-card {
+            padding: 1em;
+            border-radius: 6px;
+            background: #fff;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .skeleton-box {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(110deg, #f2f2f2 8%, #e8e8e8 18%, #f2f2f2 33%);
+            background-size: 200% 100%;
+            animation: shimmer 1.3s linear infinite;
+            border-radius: 4px;
+        }
+
+        .skeleton-thumb {
+            height: 140px;
+        }
+
+        .skeleton-line {
+            height: 14px;
+            width: 100%;
+        }
+
+        .skeleton-line.short {
+            width: 60%;
+        }
+
+        .skeleton-cta {
+            display: none;
+            width: 100%;
+            max-width: var(--container-max);
+            margin: 0.75em auto;
+            padding: 1em;
+            padding-inline: calc(var(--container-pad));
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 10px;
+        }
+
+        body.searching .skeleton-cta {
+            display: block;
+        }
+
+        .skeleton-cta-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .skeleton-cta-button {
+            height: 40px;
+            width: 180px;
+        }
+
+        .skeleton-cta-text {
+            height: 16px;
+            width: 120px;
+        }
+
+        body.searching .product-grid,
+        body.searching .cta-and-filters,
+        body.searching .result-count {
+            opacity: 0;
+            pointer-events: none;
+            display: none;
         }
 
         /* ---------- TOGGLE SWITCH ---------- */
@@ -408,9 +575,14 @@
     </style>
 
     <script>
-        /* ---------- SPINNER ---------- */
+        /* ---------- SEARCH STATE HANDLER ---------- */
         function showSpinner() {
-            document.getElementById('spinner-overlay').style.display = 'block';
+            const body = document.body;
+            body.dataset.returnToInitial = body.classList.contains('initial-state') ? 'true' : 'false';
+            body.classList.remove('initial-state');
+            if (!body.classList.contains('searching')) {
+                body.classList.add('searching');
+            }
         }
 
         /* ---------- PLACEHOLDER ROTATOR ---------- */
@@ -649,86 +821,82 @@
                     document.close();
                 } catch (err) {
                     console.error('Search submit failed:', err);
-                    // Optionally hide spinner on error
-                    const overlay = document.getElementById('spinner-overlay');
-                    if (overlay) overlay.style.display = 'none';
+                    const body = document.body;
+                    body.classList.remove('searching');
+                    if (body.dataset.returnToInitial === 'true') {
+                        body.classList.add('initial-state');
+                    }
+                    delete body.dataset.returnToInitial;
                     alert('Something went wrong performing the search. Please try again.');
                 }
             }, { capture: true });
         });
     </script>
-</head>
+    </head>
 
-<body>
-    <div style="text-align:center; margin-bottom:0.5em;">
-        <img src="https://i.postimg.cc/nrSJ8C3T/2s-nls-logo.png"
-             alt="2S Natural Language Golf Search"
-             style="max-width:182px;width:42%;height:auto;">
-    </div>
+<body class="{% if user_query|default('')|trim %}has-results{% else %}initial-state{% endif %}">
+    <div class="main-content">
+        <header class="hero-wrapper" id="hero">
+            <img src="https://i.postimg.cc/nrSJ8C3T/2s-nls-logo.png"
+                 alt="2S Natural Language Golf Search"
+                 class="hero-logo">
 
-    <!-- ---------- LOADING SPINNER ---------- -->
-    <div id="spinner-overlay"
-         style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-                background:rgba(255,255,255,0.7);z-index:9999;">
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);
-                    text-align:center;">
-            <img src="https://i.postimg.cc/yxqzbNFM/spinner.png" class="spinner-img" alt="Loading spinner">
-            <p>Loading...</p>
-        </div>
-    </div>
-
-    <!-- ---------- SEARCH FORM ---------- -->
-    <form method="POST" onsubmit="showSpinner()">
-        <div class="unified-search-container">
-            <select id="club_type" name="club_type" class="club-dropdown">
-                {% for ct in VISIBLE_ATTRS.keys() %}
-                    <option value="{{ ct }}" {% if club_type == ct %}selected{% endif %}>{{ ct }}</option>
-                {% endfor %}
-            </select>
-            
-            <div class="textarea-container">
-                <textarea id="user_query"
-                          name="user_query"
-                          class="search-input"
-                          placeholder="e.g. Titleist left-handed driver regular flex under $400"
-                          rows="1">{{ user_query }}</textarea>
-                
-                <button type="submit" class="search-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Architecture Toggle (moved below) -->
-        <div class="architecture-toggle-container">
-            <label for="architecture_toggle">Architecture:</label>
-            <label class="toggle-switch">
-                <input type="checkbox" id="architecture_toggle" name="use_new_architecture" 
-                       {% if use_new_architecture %}checked{% endif %}>
-                <span class="slider"></span>
-            </label>
-            <span id="architecture_label">
-                {% if use_new_architecture %}New{% else %}Old{% endif %}
-            </span>
-            <div class="tooltip">
-                <span class="tooltip-icon">?</span>
-                <div class="tooltip-content">
-                    <strong>Old Architecture (Default):</strong><br>
-                    • Uses traditional 3-step LLM process<br>
-                    • Extracts and injects model lists for model-specific queries<br>
-                    • Higher token usage but more precise model matching<br><br>
-                    <strong>New Architecture:</strong><br>
-                    • Streamlined 2-step process for Drivers<br>
-                    • Uses global search for model-specific Driver queries<br>
-                    • Lower token usage and faster processing<br>
-                    • Other club types still use traditional process
+            <!-- ---------- SEARCH FORM ---------- -->
+            <form method="POST" onsubmit="showSpinner()">
+                <div class="unified-search-container">
+                    <select id="club_type" name="club_type" class="club-dropdown">
+                        {% for ct in VISIBLE_ATTRS.keys() %}
+                            <option value="{{ ct }}" {% if club_type == ct %}selected{% endif %}>{{ ct }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <div class="textarea-container">
+                        <textarea id="user_query"
+                                  name="user_query"
+                                  class="search-input"
+                                  placeholder="e.g. Titleist left-handed driver regular flex under $400"
+                                  rows="1">{{ user_query }}</textarea>
+                        
+                        <button type="submit" class="search-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Architecture Toggle (moved below) -->
+                <div class="architecture-toggle-container">
+                    <label for="architecture_toggle">Architecture:</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="architecture_toggle" name="use_new_architecture" 
+                               {% if use_new_architecture %}checked{% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                    <span id="architecture_label">
+                        {% if use_new_architecture %}New{% else %}Old{% endif %}
+                    </span>
+                </div>
+            </form>
+        </header>
+
+        <div class="skeleton-cta" aria-hidden="true">
+            <div class="skeleton-cta-content">
+                <div class="skeleton-box skeleton-cta-button"></div>
+                <div class="skeleton-box skeleton-cta-text"></div>
             </div>
         </div>
-    </form>
+
+        <div id="loading-skeleton" class="skeleton-grid" aria-hidden="true">
+            {% for _ in range(8) %}
+                <div class="skeleton-card">
+                    <div class="skeleton-box skeleton-thumb"></div>
+                    <div class="skeleton-box skeleton-line"></div>
+                    <div class="skeleton-box skeleton-line short"></div>
+                </div>
+            {% endfor %}
+        </div>
 
     <!-- ---------- CTA & FILTERS ---------- -->
     {% if generated_url %}
@@ -789,6 +957,6 @@
             {% endfor %}
         </div>
     {% endif %}
+</div>
 </body>
 </html>
- 
