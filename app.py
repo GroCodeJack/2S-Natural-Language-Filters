@@ -3,6 +3,7 @@ import json
 import time
 import uuid
 from flask import Flask, request, redirect, url_for, render_template, jsonify
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import mixpanel
@@ -14,8 +15,13 @@ from services.scraper import scrape_2ndswing
 
 app = Flask(__name__)
 
-# Rate limiting
-limiter = Limiter(get_remote_address, app=app, default_limits=[RATE_LIMIT], storage_uri="memory://")
+# Trust proxy headers (Render) so get_remote_address sees real client IP
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+
+# Rate limiting: use Redis if available for shared limits across instances
+REDIS_URL = os.environ.get("REDIS_URL")
+storage_uri = REDIS_URL if REDIS_URL else "memory://"
+limiter = Limiter(get_remote_address, app=app, storage_uri=storage_uri)
 
 # In-memory, cookie-less results cache for PRG that works in iframes (no third-party cookies)
 # Entries are shown once (popped on first GET) and expire after TTL seconds
@@ -37,7 +43,8 @@ def _cache_pop(rid: str):
     item = RESULTS_CACHE.pop(rid, None)
     return item["data"] if item else None
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"]) 
+@limiter.limit("5 per hour", methods=["POST"])  # Limit only search submissions
 def index():
     # Track page view for all requests
     if os.environ.get("MIXPANEL_TOKEN"):

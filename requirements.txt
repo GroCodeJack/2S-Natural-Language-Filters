@@ -5,3 +5,4 @@ beautifulsoup4
 gunicorn
 flask-limiter
 mixpanel
+redis
