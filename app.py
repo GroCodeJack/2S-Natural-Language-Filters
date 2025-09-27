@@ -111,30 +111,6 @@ def index():
             # Apply the prefix to the system prompt (must remain within this block)
             system_prompt = prefix + system_prompt
 
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    # Simple friendly message; frontend can render the returned HTML
-    return (
-        render_template(
-            "index.html",
-            user_query="",
-            generated_url="",
-            products=[],
-            club_type="Driver",
-            total_count=None,
-            use_new_architecture=False,
-            applied_filters=[],
-            next_page_url=None,
-            VISIBLE_ATTRS=VISIBLE_ATTRS,
-            placeholders_json=json.dumps(PLACEHOLDERS),
-        )
-        + "<div style='max-width:1300px;margin:12px auto;padding:12px;border:1px solid #f0c36d;background:#fff8e5;border-radius:8px;color:#7a5d00;'>"
-          "You’ve reached the search rate limit. Please try again in a minute."  
-          "</div>",
-        429,
-        {"Retry-After": getattr(e, "retry_after", "60")},
-    )
-
         # Generate URL and scrape data
         generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)
         products, total_count, applied_filters, next_page_url = scrape_2ndswing(generated_url)
