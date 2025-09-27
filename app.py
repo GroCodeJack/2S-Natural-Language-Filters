@@ -21,6 +21,12 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 # Rate limiting: use Redis if available for shared limits across instances
 REDIS_URL = os.environ.get("REDIS_URL")
 storage_uri = REDIS_URL if REDIS_URL else "memory://"
+
+# If using TLS (rediss://), append sane SSL defaults if not present.
+if storage_uri and storage_uri.startswith("rediss://") and "ssl=" not in storage_uri:
+    sep = "&" if "?" in storage_uri else "?"
+    # ssl=true enables TLS, ssl_cert_reqs=none avoids cert validation issues on some managed Redis endpoints
+    storage_uri = f"{storage_uri}{sep}ssl=true&ssl_cert_reqs=none"
 limiter = Limiter(get_remote_address, app=app, storage_uri=storage_uri)
 
 # In-memory, cookie-less results cache for PRG that works in iframes (no third-party cookies)
