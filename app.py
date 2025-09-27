@@ -22,12 +22,12 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 REDIS_URL = os.environ.get("REDIS_URL")
 storage_uri = REDIS_URL if REDIS_URL else "memory://"
 
-# If using TLS (rediss://), append sane SSL defaults if not present.
-if storage_uri and storage_uri.startswith("rediss://") and "ssl=" not in storage_uri:
-    sep = "&" if "?" in storage_uri else "?"
-    # ssl=true enables TLS, ssl_cert_reqs=none avoids cert validation issues on some managed Redis endpoints
-    storage_uri = f"{storage_uri}{sep}ssl=true&ssl_cert_reqs=none"
-limiter = Limiter(get_remote_address, app=app, storage_uri=storage_uri)
+def client_key():
+    """Per-client identifier: IP + short User-Agent to reduce shared-IP collisions."""
+    ua = (request.headers.get("User-Agent") or "")[:64]
+    return f"{get_remote_address()}|{ua}"
+
+limiter = Limiter(client_key, app=app, storage_uri=storage_uri)
 
 # In-memory, cookie-less results cache for PRG that works in iframes (no third-party cookies)
 # Entries are shown once (popped on first GET) and expire after TTL seconds
@@ -49,8 +49,8 @@ def _cache_pop(rid: str):
     item = RESULTS_CACHE.pop(rid, None)
     return item["data"] if item else None
 
-@app.route("/", methods=["GET", "POST"]) 
-@limiter.limit("5 per hour", methods=["POST"])  # Limit only search submissions
+@app.route("/", methods=["GET", "POST"])  # Short window guard (easy to verify)
+@limiter.limit("100 per hour", methods=["POST"])    # Hourly guard
 def index():
     # Track page view for all requests
     if os.environ.get("MIXPANEL_TOKEN"):
@@ -107,6 +107,31 @@ def index():
                 f"CLASSIFICATION: {'MODEL_SPECIFIC' if is_model_specific else 'GENERIC'}\n"
                 f"CLUB_TYPE: {club_type}\n"
             )
+
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    # Simple friendly message; frontend can render the returned HTML
+    return (
+        render_template(
+            "index.html",
+            user_query="",
+            generated_url="",
+            products=[],
+            club_type="Driver",
+            total_count=None,
+            use_new_architecture=False,
+            applied_filters=[],
+            next_page_url=None,
+            VISIBLE_ATTRS=VISIBLE_ATTRS,
+            placeholders_json=json.dumps(PLACEHOLDERS),
+        )
+        + "<div style='max-width:1300px;margin:12px auto;padding:12px;border:1px solid #f0c36d;background:#fff8e5;border-radius:8px;color:#7a5d00;'>"
+          "You’ve reached the search rate limit. Please try again in a minute."  
+          "</div>",
+        429,
+        {"Retry-After": getattr(e, "retry_after", "60")},
+    )
             system_prompt = prefix + system_prompt
 
         # Generate URL and scrape data
