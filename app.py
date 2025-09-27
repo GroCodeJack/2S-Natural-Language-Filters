@@ -108,6 +108,8 @@ def index():
                 f"CLUB_TYPE: {club_type}\n"
             )
 
+            # Apply the prefix to the system prompt (must remain within this block)
+            system_prompt = prefix + system_prompt
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
@@ -132,7 +134,6 @@ def ratelimit_handler(e):
         429,
         {"Retry-After": getattr(e, "retry_after", "60")},
     )
-            system_prompt = prefix + system_prompt
 
         # Generate URL and scrape data
         generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)
