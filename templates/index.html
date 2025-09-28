@@ -3,6 +3,7 @@
 <head>
     <title>Natural Language Golf Search</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Rift+Soft:ital,wght@1,600&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -70,10 +71,17 @@
             transform: translateY(0);
         }
 
-        .hero-logo {
-            max-width: 182px;
-            width: 42%;
-            height: auto;
+        .hero-title {
+            font-family: 'Rift Soft', sans-serif;
+            font-weight: 600;
+            font-style: italic;
+            font-size: clamp(1.4rem, 3.5vw, 2.45rem);
+            color: #b71c1c;
+            text-align: center;
+            margin: 0;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            text-transform: uppercase;
         }
 
         /* ---------- FORM ---------- */
@@ -136,7 +144,6 @@
             resize: none;
             outline: none;
             min-height: 20px;
-            max-height: 120px;
             overflow-y: hidden;
             line-height: 1.4;
             transition: height 0.2s ease;
@@ -643,15 +650,12 @@
             
             function autoResize() {
                 textarea.style.height = 'auto';
-                const newHeight = Math.min(textarea.scrollHeight, 120);
+                // Remove the max height limit to allow proper expansion
+                const newHeight = Math.max(textarea.scrollHeight, 20); // minimum height of 20px
                 textarea.style.height = newHeight + 'px';
                 
-                // Show scrollbar only when content exceeds max height
-                if (textarea.scrollHeight > 120) {
-                    textarea.style.overflowY = 'auto';
-                } else {
-                    textarea.style.overflowY = 'hidden';
-                }
+                // Always hide scrollbar since we're auto-resizing
+                textarea.style.overflowY = 'hidden';
             }
             
             textarea.addEventListener('input', autoResize);
@@ -688,15 +692,22 @@
                 label.textContent = toggle.checked ? 'New' : 'Old';
             });
         });
-            document.addEventListener("DOMContentLoaded", () => {
+        /* ---------- ENTER KEY HANDLING ---------- */
+        document.addEventListener("DOMContentLoaded", () => {
             const textarea = document.getElementById("user_query");
             const form = textarea.closest("form");
 
             textarea.addEventListener("keydown", function(e) {
-                if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();  // prevent newline
-                    showSpinner();       // show spinner
-                    form.submit();       // trigger the form submission
+                if (e.key === "Enter") {
+                    if (e.shiftKey) {
+                        // SHIFT+Enter: allow newline (default behavior)
+                        return;
+                    } else {
+                        // Enter alone: trigger search
+                        e.preventDefault();  // prevent newline
+                        showSpinner();       // show spinner
+                        form.submit();       // trigger the form submission
+                    }
                 }
             });
         });
@@ -866,9 +877,7 @@
 <body class="{% if user_query|default('')|trim %}has-results{% else %}initial-state{% endif %}">
     <div class="main-content">
         <header class="hero-wrapper" id="hero">
-            <img src="https://i.postimg.cc/nrSJ8C3T/2s-nls-logo.png"
-                 alt="2S Natural Language Golf Search"
-                 class="hero-logo">
+            <h1 class="hero-title">AI Golf Club Search</h1>
 
             <!-- ---------- SEARCH FORM ---------- -->
             <form method="POST" onsubmit="showSpinner()">
