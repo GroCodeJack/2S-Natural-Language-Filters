@@ -75,11 +75,26 @@ def scrape_2ndswing(url: str):
 
             # Price & condition (if single‑used)
             price = condition = "N/A"
+            new_price = new_url = used_price = used_url = None
+            
             if not parent_model:
                 price_div = card.find("div", class_="current-price")
                 price = price_div.get_text(strip=True) if price_div else "N/A"
                 cond_div = card.find("div", class_="pmp-product-condition")
                 condition = cond_div.get_text(strip=True) if cond_div else "N/A"
+            else:
+                # Extract New and Used pricing for parent models
+                new_used_links = card.find_all("a", class_="new-used-listing-link")
+                for link in new_used_links:
+                    href = link.get("href", "")
+                    price_span = link.find("span", class_="price")
+                    
+                    if "new_used_filter=New" in href and price_span:
+                        new_price = price_span.get_text(strip=True)
+                        new_url = href
+                    elif "new_used_filter=Used" in href and price_span:
+                        used_price = price_span.get_text(strip=True)
+                        used_url = href
 
             all_data.append({
                 "brand": brand,
@@ -89,6 +104,10 @@ def scrape_2ndswing(url: str):
                 "price": price,
                 "condition": condition,
                 "parent_model": parent_model,
+                "new_price": new_price,
+                "new_url": new_url,
+                "used_price": used_price,
+                "used_url": used_url,
                 "attrs": attrs,
             })
         return all_data, total_count, applied_filters, next_page_url

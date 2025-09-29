@@ -308,6 +308,62 @@
 
         .attr { font-size: 0.9em; color: #444; }
 
+        /* ---------- PARENT MODEL PRICING ---------- */
+        .parent-model-pricing {
+            margin-top: 0.5em;
+        }
+
+        .pricing-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5em;
+            padding: 0.5em;
+            border-radius: 4px;
+            background: #f8f8f8;
+            text-decoration: none;
+            color: inherit;
+            min-height: 50px;
+            border-left: 3px solid #b71c1c;
+            transition: background-color 0.2s ease;
+        }
+
+        .pricing-option:hover {
+            background: #f0f0f0;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .condition-label {
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .price-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            color: #b71c1c;
+            font-weight: bold;
+            min-height: 32px;
+            justify-content: center;
+        }
+
+        .starting-at {
+            font-size: 0.8em;
+            color: #666;
+            font-weight: normal;
+            line-height: 1;
+        }
+
+        .price {
+            font-size: 1em;
+            color: #b71c1c;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
         /* ---------- CTA & FILTERS ---------- */
         .cta-and-filters {
             width: 100%;
@@ -979,7 +1035,26 @@
                         <h3>{{ product.brand }} {{ product.model }}</h3>
 
                         {% if product.parent_model %}
-                            <div class="attr"><p>PARENT MODEL</p></div>
+                            <div class="parent-model-pricing">
+                                {% if product.new_price and product.new_url %}
+                                    <a href="{{ product.new_url }}" target="_blank" class="pricing-option new-pricing">
+                                        <span class="condition-label">NEW</span>
+                                        <div class="price-section">
+                                            <span class="price">{{ product.new_price }}</span>
+                                        </div>
+                                    </a>
+                                {% endif %}
+                                
+                                {% if product.used_price and product.used_url %}
+                                    <a href="{{ product.used_url }}" target="_blank" class="pricing-option used-pricing">
+                                        <span class="condition-label">USED</span>
+                                        <div class="price-section">
+                                            <span class="starting-at">Starting at</span>
+                                            <span class="price">{{ product.used_price }}</span>
+                                        </div>
+                                    </a>
+                                {% endif %}
+                            </div>
                         {% else %}
                             <div class="price-text">{{ product.price }}</div>
                             <div class="attr">
