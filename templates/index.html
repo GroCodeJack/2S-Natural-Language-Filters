@@ -750,6 +750,180 @@
             transform: scale(0.9);
             pointer-events: none;
         }
+
+        /* ---------- WELCOME MODAL ---------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 550px;
+            width: 90%;
+            margin: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .modal-title {
+            font-family: 'Rift Soft', sans-serif;
+            font-weight: 600;
+            font-style: italic;
+            font-size: 1.5rem;
+            color: #b71c1c;
+            margin: 0;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            flex-shrink: 0;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #333;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .modal-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .modal-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .modal-list li:before {
+            content: "•";
+            position: absolute;
+            left: 0.5rem;
+            color: #b71c1c;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .modal-button {
+            background: #b71c1c;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            box-shadow: 0 2px 8px rgba(183, 28, 28, 0.3);
+        }
+
+        .modal-button:hover {
+            background: #8f1616;
+        }
+
+        .modal-button:active {
+            background: #6d1010;
+            transform: translateY(1px);
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+
+            .modal-header {
+                padding: 1.25rem 1.5rem 0.75rem;
+            }
+
+            .modal-body {
+                padding: 1.25rem 1.5rem;
+            }
+
+            .modal-footer {
+                padding: 0.75rem 1.5rem 1.25rem;
+            }
+
+            .modal-title {
+                font-size: 1.25rem;
+            }
+
+            .modal-description {
+                font-size: 0.95rem;
+            }
+
+            .modal-list li {
+                font-size: 0.9rem;
+            }
+        }
     </style>
 
     <script>
@@ -1171,9 +1345,88 @@
             });
         }
     </script>
+
+    <script>
+        /* ---------- WELCOME MODAL ---------- */
+        document.addEventListener('DOMContentLoaded', () => {
+            const STORAGE_KEY = 'ai_golf_search_visited';
+            const modal = document.getElementById('welcome-modal');
+            const closeBtn = document.getElementById('modal-close-btn');
+            const gotItBtn = document.getElementById('modal-got-it-btn');
+
+            // Check if user has visited before
+            const hasVisited = localStorage.getItem(STORAGE_KEY);
+
+            if (!hasVisited) {
+                // Show modal after a brief delay for better UX
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 500);
+            }
+
+            function closeModal() {
+                modal.classList.remove('show');
+                localStorage.setItem(STORAGE_KEY, 'true');
+            }
+
+            // Close button handler
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeModal);
+            }
+
+            // Got it button handler
+            if (gotItBtn) {
+                gotItBtn.addEventListener('click', closeModal);
+            }
+
+            // Close on overlay click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Close on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
     </head>
 
 <body class="{% if user_query|default('')|trim %}has-results{% else %}initial-state{% endif %}">
+    <!-- ---------- WELCOME MODAL ---------- -->
+    <div id="welcome-modal" class="modal-overlay" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title">Introducing AI Golf Club Search (Beta)</h2>
+                <button id="modal-close-btn" class="modal-close" aria-label="Close modal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">
+                    AI Golf Club Search is the fastest way to find exactly what you're looking for. 
+                    Simply enter your search in natural language—like <strong>"Ping right-handed stiff flex drivers under $300"</strong>—and 
+                    our AI will return matching results instantly.
+                </p>
+                <ul class="modal-list">
+                    <li><strong>Select club type first:</strong> Choose the club type from the dropdown near the search bar before searching</li>
+                    <li><strong>Shaft flex filtering:</strong> Currently, we can filter by shaft flex options but not specific shaft models</li>
+                    <li><strong>Beta version:</strong> This feature is in beta and results may not always be perfect—we're continuously improving!</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-got-it-btn" class="modal-button">Got it, let's search!</button>
+            </div>
+        </div>
+    </div>
+
     <div class="main-content">
         <header class="hero-wrapper" id="hero">
             <h1 class="hero-title">AI Golf Club Search</h1>
