@@ -826,8 +826,13 @@
         }
 
         function loadMoreProducts() {
-            if (isLoading || !nextPageUrl) return;
+            if (isLoading || !nextPageUrl || nextPageUrl === 'None') {
+                console.log('Load more blocked:', { isLoading, nextPageUrl });
+                return;
+            }
             
+            console.log('Loading more products from:', nextPageUrl);
+            console.log('EXACT URL BEING CURLED:', nextPageUrl);
             isLoading = true;
             
             fetch('/load_more', {
@@ -844,8 +849,11 @@
             .then(data => {
                 if (data.error) {
                     console.error('Error loading more products:', data.error);
+                    isLoading = false;
                     return;
                 }
+                
+                console.log('Received', data.products.length, 'new products');
                 
                 const productGrid = document.querySelector('.product-grid');
                 const existingTileCount = productGrid.children.length;
@@ -861,6 +869,7 @@
                 });
                 
                 nextPageUrl = data.next_page_url;
+                console.log('Updated nextPageUrl to:', nextPageUrl);
                 isLoading = false;
             })
             .catch(error => {
@@ -876,14 +885,24 @@
             
             // Load more when user is within 200px of the bottom
             if (scrollTop + windowHeight >= documentHeight - 200) {
+                console.log('Scroll trigger - attempting to load more products');
                 loadMoreProducts();
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded - nextPageUrl:', nextPageUrl);
+            console.log('DOM loaded - has product grid:', !!document.querySelector('.product-grid'));
+            
             // Only add scroll listener if there are products and a next page URL
-            if (document.querySelector('.product-grid') && nextPageUrl) {
-                window.addEventListener('scroll', checkScrollPosition);
+            if (document.querySelector('.product-grid') && nextPageUrl && nextPageUrl !== 'None') {
+                console.log('Adding scroll listener for infinite scroll');
+                // Add a small delay to prevent immediate triggering
+                setTimeout(() => {
+                    window.addEventListener('scroll', checkScrollPosition);
+                }, 1000);
+            } else {
+                console.log('Not adding scroll listener - missing requirements');
             }
         });
     </script>

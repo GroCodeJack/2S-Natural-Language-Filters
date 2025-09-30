@@ -186,10 +186,20 @@ def load_more():
         next_url = request.json.get("next_url")
         club_type = request.json.get("club_type", "Driver")
         
+        print(f"Load more request - URL: {next_url}, Club type: {club_type}")
+        
         if not next_url:
+            print("Error: No next URL provided")
             return jsonify({"error": "No next URL provided"}), 400
+        
+        # Fix HTML entity encoding in the URL before making request
+        import html
+        decoded_url = html.unescape(next_url)
+        print(f"Decoded URL for scraping: {decoded_url}")
             
-        products, _, _, next_page_url = scrape_2ndswing(next_url)
+        products, _, _, next_page_url = scrape_2ndswing(decoded_url)
+        
+        print(f"Load more response - Products: {len(products)}, Next URL: {next_page_url}")
         
         return jsonify({
             "products": products,

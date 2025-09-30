@@ -44,7 +44,21 @@ def scrape_2ndswing(url: str):
             next_link = soup.select_one('ul.pages-items li.item a[href*="p=2"]')
         
         if next_link and next_link.get('href'):
-            next_page_url = next_link['href']
+            href = next_link['href']
+            # Fix HTML entity encoding issues
+            import html
+            href = html.unescape(href)
+            
+            # Ensure we have a full URL
+            if href.startswith('/'):
+                next_page_url = 'https://www.2ndswing.com' + href
+            elif href.startswith('http'):
+                next_page_url = href
+            else:
+                next_page_url = None
+            print(f"Next page URL found: {next_page_url}")
+        else:
+            print("No next page URL found")
 
         for card in soup.select("div.product-box.product-item-info"):
             brand = card.find("div", class_="product-brand")
