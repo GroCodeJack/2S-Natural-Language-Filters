@@ -644,6 +644,112 @@
             visibility: visible;
             opacity: 1;
         }
+
+        /* ---------- NO RESULTS SECTION ---------- */
+        .no-results-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .no-results-message h3 {
+            color: #495057;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .no-results-message p {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .removable-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .removable-filter-chip {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 2px solid #dee2e6;
+            border-radius: 25px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .removable-filter-chip:hover {
+            border-color: #dc3545;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .filter-text {
+            color: #495057;
+            margin-right: 0.5rem;
+            font-weight: 500;
+        }
+
+        .remove-filter-btn {
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .remove-filter-btn:hover {
+            background: #dc3545;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .retry-search-btn {
+            background: #b71c1c;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(183,28,28,0.3);
+        }
+
+        .retry-search-btn:hover {
+            background: #8b0000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(183,28,28,0.4);
+        }
+
+        .retry-search-btn:active {
+            transform: translateY(0);
+        }
+
+        .removable-filter-chip.removed {
+            opacity: 0.3;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
     </style>
 
     <script>
@@ -790,7 +896,6 @@
         let isLoading = false;
         let nextPageUrl = '{{ next_page_url }}';
         let currentClubType = '{{ club_type }}';
-        let visibleAttrs = {};
 
         function createProductTile(product) {
             const tile = document.createElement('div');
@@ -909,7 +1014,7 @@
     
     <script>
         // Initialize data from Flask template
-        visibleAttrs = {{ VISIBLE_ATTRS|tojson|safe }};
+        var visibleAttrs = {{ VISIBLE_ATTRS|tojson|safe }};
     </script>
     
     <script>
@@ -946,6 +1051,125 @@
                 }
             }, { capture: true });
         });
+
+        /* ---------- NO RESULTS FILTER REMOVAL ---------- */
+        let removedFilters = new Set();
+        let originalUrl = '{{ generated_url|safe }}';
+
+        // Mapping of filter labels to URL parameter names
+        const filterToParamMap = {
+            'Brand': 'g2_brand',
+            'Club Loft': 'g2_club_loft', 
+            'Shaft Flex': 'g2_shaft_flex',
+            'Dexterity': 'g2_dexterity',
+            'Location': 'g2_locations',
+            'Locations': 'g2_locations',
+            'Price': 'price',
+            'Condition': 'g2_condition',
+            'Shaft Material': 'g2_shaft_material',
+            'Lie Angle': 'g2_lie_angle',
+            'Club Length': 'g2_club_length'
+        };
+
+        function removeFilter(button) {
+            const filterChip = button.closest('.removable-filter-chip');
+            const filterLabel = filterChip.dataset.filterLabel;
+            const filterValue = filterChip.dataset.filterValue;
+            
+            // Mark filter as removed
+            filterChip.classList.add('removed');
+            removedFilters.add(`${filterLabel}:${filterValue}`);
+            
+            // Show the retry search button if at least one filter is removed
+            const retryBtn = document.getElementById('retry-search-btn');
+            if (retryBtn && removedFilters.size > 0) {
+                retryBtn.style.display = 'inline-flex';
+            }
+        }
+
+        function buildModifiedUrl() {
+            if (!originalUrl) return null;
+            
+            try {
+                const url = new URL(originalUrl);
+                const params = new URLSearchParams(url.search);
+                
+                // Remove parameters for filters that were removed
+                removedFilters.forEach(filterKey => {
+                    const [label, value] = filterKey.split(':');
+                    const paramName = filterToParamMap[label];
+                    
+                    if (paramName) {
+                        // Handle array parameters (like g2_brand[0])
+                        const keys = Array.from(params.keys());
+                        keys.forEach(key => {
+                            if (key.startsWith(paramName)) {
+                                const paramValue = params.get(key);
+                                // Remove if the value matches or if it's an array parameter
+                                if (paramValue === value || key.includes('[') || paramName === 'price') {
+                                    params.delete(key);
+                                }
+                            }
+                        });
+                        
+                        // Also try direct parameter name
+                        if (params.has(paramName)) {
+                            params.delete(paramName);
+                        }
+                    }
+                });
+                
+                // Rebuild the URL
+                url.search = params.toString();
+                return url.toString();
+            } catch (error) {
+                console.error('Error building modified URL:', error);
+                return null;
+            }
+        }
+
+        function retrySearchWithFilters() {
+            const modifiedUrl = buildModifiedUrl();
+            
+            if (!modifiedUrl) {
+                console.error('Could not build modified URL');
+                return;
+            }
+            
+            console.log('Original URL:', originalUrl);
+            console.log('Modified URL:', modifiedUrl);
+            console.log('Removed filters:', Array.from(removedFilters));
+            
+            // Show spinner
+            showSpinner();
+            
+            // Make a request to scrape the modified URL
+            fetch('/search_with_url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: modifiedUrl,
+                    club_type: document.getElementById('club_type').value,
+                    user_query: document.getElementById('user_query').value,
+                    use_new_architecture: document.getElementById('architecture_toggle').checked
+                })
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Replace the current page with the new results
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => {
+                console.error('Error retrying search:', error);
+                const body = document.body;
+                body.classList.remove('searching');
+                alert('Something went wrong with the search. Please try again.');
+            });
+        }
     </script>
     </head>
 
@@ -1036,6 +1260,38 @@
                     {% endfor %}
                 </div>
             {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- ---------- NO RESULTS SECTION ---------- -->
+    {% if no_results and applied_filters %}
+        <div class="no-results-container">
+            <div class="no-results-message">
+                <h3>No products found matching your search</h3>
+                <p>Try removing some filters to expand your search:</p>
+            </div>
+            
+            <div class="removable-filters">
+                {% for filter in applied_filters %}
+                    <div class="removable-filter-chip" data-filter-label="{{ filter.label }}" data-filter-value="{{ filter.value }}">
+                        <span class="filter-text">{{ filter.label }}: {{ filter.value }}</span>
+                        <button class="remove-filter-btn" onclick="removeFilter(this)" aria-label="Remove {{ filter.label }} filter">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <button id="retry-search-btn" class="retry-search-btn" onclick="retrySearchWithFilters()" style="display: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                Search Again
+            </button>
         </div>
     {% endif %}
 

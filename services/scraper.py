@@ -10,6 +10,12 @@ def scrape_2ndswing(url: str):
         total_count = None
         applied_filters = []
         next_page_url = None
+        no_results = False
+        
+        # Check for no results message first
+        no_results_element = soup.select_one('div.message.info.empty')
+        if no_results_element and "We can't find products matching the selection" in no_results_element.get_text():
+            no_results = True
         
         # Capture total count
         count_tag = soup.select_one('p.toolbar-amount span.toolbar-number:last-child')
@@ -124,8 +130,8 @@ def scrape_2ndswing(url: str):
                 "used_url": used_url,
                 "attrs": attrs,
             })
-        return all_data, total_count, applied_filters, next_page_url
+        return all_data, total_count, applied_filters, next_page_url, no_results
     except Exception as e:
         print("Scrape error:", e)
-        return [], None, [], None
+        return [], None, [], None, False
  

@@ -71,6 +71,7 @@ def index():
     use_new_architecture = False
     applied_filters = []
     next_page_url = None
+    no_results = False
 
     if request.method == "POST":
         user_query = request.form.get("user_query", "")
@@ -113,7 +114,7 @@ def index():
 
         # Generate URL and scrape data
         generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)
-        products, total_count, applied_filters, next_page_url = scrape_2ndswing(generated_url)
+        products, total_count, applied_filters, next_page_url, no_results = scrape_2ndswing(generated_url)
 
         # Track search with Mixpanel - exactly the 5 things requested
         if os.environ.get("MIXPANEL_TOKEN"):
@@ -137,6 +138,7 @@ def index():
             use_new_architecture=use_new_architecture,
             applied_filters=applied_filters,
             next_page_url=next_page_url,
+            no_results=no_results,
             VISIBLE_ATTRS=VISIBLE_ATTRS,
             placeholders_json=json.dumps(PLACEHOLDERS)
         )
@@ -158,6 +160,7 @@ def index():
             use_new_architecture=stored.get('use_new_architecture', False),
             applied_filters=stored.get('applied_filters', []),
             next_page_url=stored.get('next_page_url'),
+            no_results=stored.get('no_results', False),
             VISIBLE_ATTRS=VISIBLE_ATTRS,
             placeholders_json=json.dumps(PLACEHOLDERS)
         )
@@ -173,9 +176,61 @@ def index():
         use_new_architecture=use_new_architecture,
         applied_filters=applied_filters,
         next_page_url=next_page_url,
+        no_results=no_results,
         VISIBLE_ATTRS=VISIBLE_ATTRS,
         placeholders_json=json.dumps(PLACEHOLDERS)
     )
+
+
+@app.route("/search_with_url", methods=["POST"])
+@limiter.limit(RATE_LIMIT)
+def search_with_url():
+    """Search with a pre-built URL (used for filter removal)."""
+    try:
+        data = request.get_json()
+        url = data.get("url")
+        club_type = data.get("club_type", "Driver")
+        user_query = data.get("user_query", "")
+        use_new_architecture = data.get("use_new_architecture", False)
+        
+        if not url:
+            return jsonify({"error": "No URL provided"}), 400
+        
+        print(f"Search with URL request - URL: {url}, Club type: {club_type}")
+        
+        # Scrape the modified URL
+        products, total_count, applied_filters, next_page_url, no_results = scrape_2ndswing(url)
+        
+        # Track search with Mixpanel
+        if os.environ.get("MIXPANEL_TOKEN"):
+            mp = mixpanel.Mixpanel(os.environ.get("MIXPANEL_TOKEN"))
+            mp.track(request.remote_addr, 'Search Performed', {
+                'club_type': club_type,
+                'user_query': user_query + " (filter removed)",
+                'generated_url': url,
+                'applied_filters': applied_filters,
+                'product_count': total_count or 0
+            })
+        
+        # Render the template with new results
+        return render_template(
+            "index.html",
+            user_query=user_query,
+            generated_url=url,
+            products=products,
+            club_type=club_type,
+            total_count=total_count,
+            use_new_architecture=use_new_architecture,
+            applied_filters=applied_filters,
+            next_page_url=next_page_url,
+            no_results=no_results,
+            VISIBLE_ATTRS=VISIBLE_ATTRS,
+            placeholders_json=json.dumps(PLACEHOLDERS)
+        )
+        
+    except Exception as e:
+        print("Search with URL error:", e)
+        return jsonify({"error": "Failed to search with URL"}), 500
 
 
 @app.route("/load_more", methods=["POST"])
@@ -197,7 +252,7 @@ def load_more():
         decoded_url = html.unescape(next_url)
         print(f"Decoded URL for scraping: {decoded_url}")
             
-        products, _, _, next_page_url = scrape_2ndswing(decoded_url)
+        products, _, _, next_page_url, _ = scrape_2ndswing(decoded_url)
         
         print(f"Load more response - Products: {len(products)}, Next URL: {next_page_url}")
         
