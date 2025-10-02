@@ -21,13 +21,13 @@ B) If CLASSIFICATION is GENERIC
   https://www.2ndswing.com/golf-clubs/wedges
 - Append filter parameters as needed (see Filters).
 
-Filters (map natural language to query params):
+Filters (map natural language to query params, not exhaustive):
 - Brand → g2_brand
 - Dexterity → g2_dexterity (Left+Handed | Right+Handed)
 - Bounce → g2_bounce (8+Deg+Bounce | 10+Deg+Bounce | 12+Deg+Bounce | 14+Deg+Bounce)
 - Club grind → g2_club_grind (C+Grind | D+Grind | F+Grind | K+Grind | L+Grind | M+Grind | Mid | S+Grind | SB | T+Grind | W+Grind | X+Grind)
 - Club length → g2_club_length (e.g., 35.0in, 35.25in, 35.5in)
-- Loft → g2_club_loft (50%C2%B0 | 52%C2%B0 | 54%C2%B0 | 56%C2%B0 | 58%C2%B0 | 60%C2%B0)
+- Loft → g2_club_loft (50° | 52° | 54° | 56° | 58° | 60°)
 - Shaft material → g2_club_shaftmatl (Graphite | Steel)
 - Shaft flex → g2_shaft_flex (Ladies | Regular | Senior | Stiff | Tour+X-Stiff | Wedge+Flex | X-Stiff)
 - Condition → g2_condition (New | Mint+9.5 | Above+Average+9.0 | Average+8.0 | Below+Average+7.0 | Poor+6.0)
