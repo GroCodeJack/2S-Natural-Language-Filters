@@ -15,7 +15,6 @@ A) If CLASSIFICATION is MODEL_SPECIFIC
 - Add any additional filters from the user's request as normal (see Filters below).
 - Final shape:
   https://www.2ndswing.com/catalogsearch/result?g2_category=Hybrid&[filters]&q={model}
-
 B) If CLASSIFICATION is GENERIC
 - Use the dedicated hybrid listing base URL:
   https://www.2ndswing.com/golf-clubs/hybrids
@@ -30,6 +29,7 @@ Filters (map natural language to query params):
 - Shaft material → g2_club_shaftmatl (Graphite | Steel)
 - Condition → g2_condition (New | Mint+9.5 | Above+Average+9.0 | Average+8.0 | Below+Average+7.0)
 - New/Used → new_used_filter (New | Used)
+- Location → g2_locations (Scottsdale+%28S%29 | Dallas | Minnetonka | Columbia | Hub | Minneapolis | Wilmington)
 - Subcategory → g2_subcategory (3+Hybrid | 4+Hybrid | 5+Hybrid | 6+Hybrid)
 - Price range → price (low-high)
   • "under N" → price=0-N
@@ -38,7 +38,7 @@ Filters (map natural language to query params):
 Heuristics:
 - If user mentions women/womens, set g2_shaft_flex=Ladies (unless another flex is explicit).
 - If user says beginner, set g2_club_desiredballflight=High+MOI unless otherwise specified.
-
+{{ ... }}
 Encoding:
 - URL-encode values. Use + for spaces, %C2%B0 for the degree symbol (°), etc.
 

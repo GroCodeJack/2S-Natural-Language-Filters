@@ -15,7 +15,6 @@ A) If CLASSIFICATION is MODEL_SPECIFIC
 - Add any additional filters from the user's request as normal (see Filters below).
 - Final shape:
   https://www.2ndswing.com/catalogsearch/result?g2_category=Putter&[filters]&q={model}
-
 B) If CLASSIFICATION is GENERIC
 - Use the dedicated putter listing base URL:
   https://www.2ndswing.com/golf-clubs/putters
@@ -30,14 +29,16 @@ Filters (map natural language to query params):
 - Toe hang → g2_club_toehang (Face+Balanced | Mid+Hang | Toe+Down)
 - Condition → g2_condition (New | Mint+9.5 | Above+Average+9.0 | Average+8.0 | Below+Average+7.0 | Poor+6.0)
 - New/Used → new_used_filter (New | Used)
+- Location → g2_locations (Scottsdale+%28S%29 | Dallas | Minnetonka | Columbia | Hub | Minneapolis | Wilmington)
 - Lie angle → g2_lieangle (Black+Dot | Orange+Dot | Red+dot)
-- Subcategory → g2_subcategory (Face+Balanced | Putter | Slight+Arc | Straight+Arc | Strong+Arc)
+- Subcategory → g2_subcategory (Putter | Slight+Arc | Straight+Arc | Strong+Arc)
 - Price range → price (low-high)
   • "under N" → price=0-N
   • "between A and B" → price=A-B
 
 Heuristics:
 - If user mentions women/womens, set g2_shaft_flex=Ladies (unless another flex is explicit).
+- Always add ".0" to the end of g2_club_length values, even on the whole number values (e.g., 28.0in, 30.0in, etc.).
 
 Encoding:
 - URL-encode values. Use + for spaces, etc.

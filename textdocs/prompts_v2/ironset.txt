@@ -15,7 +15,6 @@ A) If CLASSIFICATION is MODEL_SPECIFIC
 - Add any additional filters from the user's request as normal (see Filters below).
 - Final shape:
   https://www.2ndswing.com/catalogsearch/result?g2_category=Iron+Set&[filters]&q={model}
-
 B) If CLASSIFICATION is GENERIC
 - Use the dedicated iron set listing base URL:
   https://www.2ndswing.com/golf-clubs/iron-sets
@@ -29,6 +28,7 @@ Filters (map natural language to query params):
 - Shaft flex → g2_shaft_flex (Ladies | Senior | Regular | Stiff | X-Stiff)
 - Condition → g2_condition (New | Mint+9.5 | Above+Average+9.0 | Average+8.0 | Below+Average+7.0 | Poor+6.0)
 - New/Used → new_used_filter (New | Used)
+- Location → g2_locations (Scottsdale+%28S%29 | Dallas | Minnetonka | Columbia | Hub | Minneapolis | Wilmington)
 - Lie angle → g2_lieangle (Black+Dot | Blue+Dot | Green+Dot | Red+dot)
 - Subcategory → g2_subcategory (3-PW | 4-PW | 4-PW+AW | 4-PW+GW | 5-PW | 5-PW+AW | 5-PW+GW | 6-PW | 6-PW+AW)
 - Included clubs → ironset_included_clubs (4+Iron | 5+Iron | 6+Iron | 7+Iron | 8+Iron | 9+Iron | AW | GW | PW)
@@ -40,7 +40,6 @@ Filters (map natural language to query params):
 Heuristics:
 - If user mentions women/womens, set g2_shaft_flex=Ladies (unless another flex is explicit).
 - If user says beginner, add g2_club_headsize=Super+Game+Improvement, g2_club_headsize=Cavity+Back, and g2_club_headsize=Players+Distance.
-
 Encoding:
 - URL-encode values. Use + for spaces, %22 for quotes, %2F for slashes, etc.
 

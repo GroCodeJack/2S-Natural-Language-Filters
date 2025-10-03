@@ -15,20 +15,20 @@ A) If CLASSIFICATION is MODEL_SPECIFIC
 - Add any additional filters from the user's request as normal (see Filters below).
 - Final shape:
   https://www.2ndswing.com/catalogsearch/result?g2_category=Driver&[filters]&q={model}
-
 B) If CLASSIFICATION is GENERIC
 - Use the dedicated driver listing base URL:
   https://www.2ndswing.com/golf-clubs/drivers
 - Append filter parameters as needed (see Filters).
 
 Filters (map natural language to query params):
-- Brand → g2_brand or g2_brand[0] (e.g., Ping, TaylorMade, Titleist)
+- Brand → g2_brand or g2_brand[0] (e.g., Ping, Taylor Made, Titleist)
 - Dexterity → g2_dexterity (Left+Handed | Right+Handed)
 - Loft → g2_club_loft (e.g., 10.5°)
 - Shaft flex → g2_shaft_flex (Ladies | Senior | Regular | Stiff | X-Stiff)
 - Desired ball flight → g2_club_desiredballflight (e.g., High+MOI, Draw+Bias, Low+Spin+%2F+Fade, Neutral)
-- Condition → g2_condition (New | Mint+9.5 | Above+Average+9.0 | Average+8.0 | Below+Average+7.0)
+- Condition → g2_condition (New | Mint+9.5 | Above+average+9.0 | Average+8.0 | Below+average+7.0)
 - New/Used → new_used_filter (New | Used)
+- Location → g2_locations (Scottsdale+%28S%29 | Dallas | Minnetonka | Columbia | Hub | Minneapolis | Wilmington)
 - Price range → price (low-high),
   • "under N" → price=0-N
   • "between A and B" → price=A-B
@@ -36,7 +36,7 @@ Filters (map natural language to query params):
 Heuristics:
 - If user mentions women/womens, set g2_shaft_flex=Ladies (unless another flex is explicit).
 - If user says beginner, set g2_club_desiredballflight=High+MOI unless otherwise specified.
-
+{{ ... }}
 Encoding:
 - URL-encode values. Use + for spaces, %C2%B0 for the degree symbol (°), etc.
 

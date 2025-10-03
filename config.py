@@ -12,6 +12,9 @@ RATE_LIMIT = "350 per hour"
 # OpenAI Configuration
 OPENAI_MODEL = "gpt-4.1"
 
+# Debug Configuration
+DEBUG_DUMP_SYSTEM_PROMPT = True  # Set to False to disable system prompt logging
+
 # Club type to prompt file mapping
 CLUB_PROMPT_FILES = {
     "Driver": "driver.txt",

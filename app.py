@@ -9,7 +9,7 @@ from flask_limiter.util import get_remote_address
 import mixpanel
 
 # Import our custom modules
-from config import VISIBLE_ATTRS, PLACEHOLDERS, CLUB_PROMPT_FILES, RATE_LIMIT, FLASK_PORT, FLASK_DEBUG
+from config import VISIBLE_ATTRS, PLACEHOLDERS, CLUB_PROMPT_FILES, RATE_LIMIT, FLASK_PORT, FLASK_DEBUG, DEBUG_DUMP_SYSTEM_PROMPT
 from services.llm_service import classify_query_is_model_specific, extract_and_map_models, build_url_with_llm
 from services.scraper import scrape_2ndswing
 
@@ -111,6 +111,18 @@ def index():
 
             # Apply the prefix to the system prompt (must remain within this block)
             system_prompt = prefix + system_prompt
+
+        # Debug: dump system prompt to CLI if enabled
+        if DEBUG_DUMP_SYSTEM_PROMPT:
+            print("\n" + "="*80)
+            print("SYSTEM PROMPT DEBUG DUMP")
+            print("="*80)
+            print(f"Club Type: {club_type}")
+            print(f"Architecture: {'v2 (new)' if use_new_architecture else 'v1 (old)'}")
+            print(f"User Query: {user_query}")
+            print("-"*80)
+            print(system_prompt)
+            print("="*80 + "\n")
 
         # Generate URL and scrape data
         generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)

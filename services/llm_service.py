@@ -1,7 +1,7 @@
 import os
 from urllib.parse import quote_plus
 from openai import OpenAI
-from config import OPENAI_MODEL, MODEL_DATA_FILES
+from config import OPENAI_MODEL, MODEL_DATA_FILES, DEBUG_DUMP_SYSTEM_PROMPT
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -30,6 +30,16 @@ def classify_query_is_model_specific(user_query: str) -> bool:
         "Never output anything except '1' or '0'.\n\n" + examples + "\n\n" +
         "These names are BRANDS, not models – do *not* treat them as models:\n" + brand_list
     )
+
+    # Debug: dump classification system prompt if enabled
+    if DEBUG_DUMP_SYSTEM_PROMPT:
+        print("\n" + "="*80)
+        print("CLASSIFICATION SYSTEM PROMPT DEBUG DUMP")
+        print("="*80)
+        print(f"User Query: {user_query}")
+        print("-"*80)
+        print(system_prompt)
+        print("="*80 + "\n")
 
     try:
         resp = client.chat.completions.create(
