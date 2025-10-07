@@ -82,7 +82,7 @@ def index():
         is_model_specific = classify_query_is_model_specific(user_query)
 
         # Determine prompt directory based on architecture selection
-        prompt_dir = "prompts_v2" if use_new_architecture else "prompts_v1"
+        prompt_dir = "prompts_v2" if use_new_architecture else "prompts_v2"
         
         # Handle model extraction based on architecture
         mapped_models = ""
