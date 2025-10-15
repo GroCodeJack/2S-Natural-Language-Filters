@@ -63,7 +63,7 @@
         }
 
         body.initial-state .hero-wrapper {
-            transform: translateY(calc(42vh - 50%));
+            transform: translateY(calc(12vh - 50%));
         }
 
         body.searching .hero-wrapper,
@@ -72,16 +72,34 @@
         }
 
         .hero-title {
-            font-family: 'Rift Soft', sans-serif;
-            font-weight: 600;
-            font-style: italic;
-            font-size: clamp(1.4rem, 3.5vw, 2.45rem);
-            color: #b71c1c;
+            font-family: rift, sans-serif !important;
+            font-style: italic !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: clamp(1.6rem, 4vw, 54.4px);
+            line-height: 1;
+            color: #000000;
             text-align: center;
             margin: 0;
             letter-spacing: -0.02em;
-            line-height: 1.1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .beta-tag {
+            font-family: 'urw-din', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            font-style: normal;
             text-transform: uppercase;
+            background: #b71c1c;
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
         }
 
         /* ---------- FORM ---------- */
@@ -104,7 +122,7 @@
             position: relative;
             flex: 1;
             background: white;
-            border: 1px solid #ddd;
+            border: 1px solid #999;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -124,7 +142,8 @@
 
         .club-dropdown {
             padding: 1em;
-            border: 1px solid #ddd;
+            padding-right: 2.5em;
+            border: 1px solid #999;
             background: white;
             font-size: 1em;
             cursor: pointer;
@@ -132,6 +151,16 @@
             border-radius: 8px;
             min-width: 120px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' d='M4 6l4 4 4-4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75em center;
+            background-size: 16px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            text-align: center;
+            text-align-last: center;
+            color: #000;
         }
 
 
@@ -159,8 +188,9 @@
         .search-btn {
             position: absolute;
             right: 8px;
-            bottom: 8px;
-            background: #c41e3a;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #b71c1c;
             color: white;
             border: none;
             padding: 8px;
@@ -191,16 +221,6 @@
         }
         .char-limit-msg.visible { display: block; }
 
-        .architecture-toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin: 10px 0;
-            font-size: 0.9em;
-            color: #666;
-        }
-
         /* Responsive design */
         @media (max-width: 768px) {
             .container {
@@ -216,6 +236,7 @@
                 order: -1;
                 min-width: auto;
                 padding: 1.2em;
+                padding-right: 2.5em;
                 font-size: 1em;
             }
             
@@ -240,11 +261,6 @@
             .search-btn svg {
                 width: 20px;
                 height: 20px;
-            }
-            
-            .architecture-toggle-container {
-                margin-top: 1.5em;
-                justify-content: center;
             }
         }
 
@@ -543,52 +559,6 @@
             opacity: 0;
             pointer-events: none;
             display: none;
-        }
-
-        /* ---------- TOGGLE SWITCH ---------- */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #b71c1c;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
         }
 
         /* ---------- TOOLTIP ---------- */
@@ -1019,15 +989,6 @@
             enforceLimit();
         });
 
-        /* ---------- ARCHITECTURE TOGGLE ---------- */
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('architecture_toggle');
-            const label = document.getElementById('architecture_label');
-            
-            toggle.addEventListener('change', () => {
-                label.textContent = toggle.checked ? 'New' : 'Old';
-            });
-        });
         /* ---------- ENTER KEY HANDLING ---------- */
         document.addEventListener("DOMContentLoaded", () => {
             const textarea = document.getElementById("user_query");
@@ -1326,8 +1287,7 @@
                 body: JSON.stringify({
                     url: modifiedUrl,
                     club_type: document.getElementById('club_type').value,
-                    user_query: document.getElementById('user_query').value,
-                    use_new_architecture: document.getElementById('architecture_toggle').checked
+                    user_query: document.getElementById('user_query').value
                 })
             })
             .then(response => response.text())
@@ -1429,7 +1389,10 @@
 
     <div class="main-content">
         <header class="hero-wrapper" id="hero">
-            <h1 class="hero-title">AI Golf Club Search</h1>
+            <h1 class="hero-title">
+                <span>AI SEARCH</span>
+                <span class="beta-tag">Beta</span>
+            </h1>
 
             <!-- ---------- SEARCH FORM ---------- -->
             <form method="POST" onsubmit="showSpinner()">
@@ -1455,19 +1418,6 @@
                             </svg>
                         </button>
                     </div>
-                </div>
-
-                <!-- Architecture Toggle (moved below) -->
-                <div class="architecture-toggle-container">
-                    <label for="architecture_toggle">Architecture:</label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="architecture_toggle" name="use_new_architecture" 
-                               {% if use_new_architecture %}checked{% endif %}>
-                        <span class="slider"></span>
-                    </label>
-                    <span id="architecture_label">
-                        {% if use_new_architecture %}New{% else %}Old{% endif %}
-                    </span>
                 </div>
             </form>
         </header>

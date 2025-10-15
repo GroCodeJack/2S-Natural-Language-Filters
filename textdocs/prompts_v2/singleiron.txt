@@ -36,6 +36,14 @@ Filters (map natural language to query params):
   • "under N" → price=0-N
   • "between A and B" → price=A-B
 
+Sorting (order by - map natural language to query params):
+- "Relevance" → Default, add nothing.
+- "Newest Released", "newest", "latest", "recent" → &product_list_order=create_desc
+- "Oldest Released", "oldest", "earliest" → &product_list_order=create_asc
+- "Highest Price", "most expensive", "price high to low" → &product_list_order=price_desc
+- "Lowest Price", "cheapest", "price low to high" → &product_list_order=price_asc
+- "Just Listed", "recently listed", "new listings" → &product_list_order=listed_desc
+
 Heuristics:
 - If user mentions women/womens, set g2_shaft_flex=Ladies (unless another flex is explicit).
 - If user says beginner, add g2_club_headsize=Super+Game+Improvement, g2_club_headsize=Cavity+Back, and g2_club_headsize=Players+Distance.

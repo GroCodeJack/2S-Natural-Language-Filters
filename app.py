@@ -10,7 +10,7 @@ import mixpanel
 
 # Import our custom modules
 from config import VISIBLE_ATTRS, PLACEHOLDERS, CLUB_PROMPT_FILES, RATE_LIMIT, FLASK_PORT, FLASK_DEBUG, DEBUG_DUMP_SYSTEM_PROMPT
-from services.llm_service import classify_query_is_model_specific, extract_and_map_models, build_url_with_llm
+from services.llm_service import classify_query_is_model_specific, build_url_with_llm
 from services.scraper import scrape_2ndswing
 
 app = Flask(__name__)
@@ -68,7 +68,6 @@ def index():
     products = []
     club_type = "Driver"
     total_count = None
-    use_new_architecture = False
     applied_filters = []
     next_page_url = None
     no_results = False
@@ -76,41 +75,24 @@ def index():
     if request.method == "POST":
         user_query = request.form.get("user_query", "")
         club_type = request.form.get("club_type", "Driver")
-        use_new_architecture = request.form.get("use_new_architecture") == "on"
 
         # Check if query is model-specific
         is_model_specific = classify_query_is_model_specific(user_query)
 
-        # Determine prompt directory based on architecture selection
-        prompt_dir = "prompts_v2" if use_new_architecture else "prompts_v2"
-        
-        # Handle model extraction based on architecture
-        mapped_models = ""
-        if use_new_architecture:
-            # New architecture: skip model extraction for ALL club types (use q= parameter instead)
-            pass
-        else:
-            # Old architecture: extract models for all model-specific queries
-            if is_model_specific:
-                mapped_models = extract_and_map_models(user_query, club_type)
-
-        # Load system prompt for the club type from appropriate directory
-        prompt_path = os.path.join("textdocs", prompt_dir, CLUB_PROMPT_FILES.get(club_type, "driver.txt"))
+        # Load system prompt for the club type from prompts_v2
+        prompt_path = os.path.join("textdocs", "prompts_v2", CLUB_PROMPT_FILES.get(club_type, "driver.txt"))
         try:
             with open(prompt_path, "r") as f:
                 system_prompt = f.read()
         except Exception:
             system_prompt = "Build a URL for the chosen club type."
 
-        # For new architecture, prepend classifier result for all club types
-        if use_new_architecture:
-            prefix = (
-                f"CLASSIFICATION: {'MODEL_SPECIFIC' if is_model_specific else 'GENERIC'}\n"
-                f"CLUB_TYPE: {club_type}\n"
-            )
-
-            # Apply the prefix to the system prompt (must remain within this block)
-            system_prompt = prefix + system_prompt
+        # Prepend classifier result to system prompt
+        prefix = (
+            f"CLASSIFICATION: {'MODEL_SPECIFIC' if is_model_specific else 'GENERIC'}\n"
+            f"CLUB_TYPE: {club_type}\n"
+        )
+        system_prompt = prefix + system_prompt
 
         # Debug: dump system prompt to CLI if enabled
         if DEBUG_DUMP_SYSTEM_PROMPT:
@@ -118,14 +100,13 @@ def index():
             print("SYSTEM PROMPT DEBUG DUMP")
             print("="*80)
             print(f"Club Type: {club_type}")
-            print(f"Architecture: {'v2 (new)' if use_new_architecture else 'v1 (old)'}")
             print(f"User Query: {user_query}")
             print("-"*80)
             print(system_prompt)
             print("="*80 + "\n")
 
-        # Generate URL and scrape data
-        generated_url = build_url_with_llm(user_query, system_prompt, mapped_models)
+        # Generate URL and scrape data (no model extraction needed - using q= parameter)
+        generated_url = build_url_with_llm(user_query, system_prompt, "")
         products, total_count, applied_filters, next_page_url, no_results = scrape_2ndswing(generated_url)
 
         # Track search with Mixpanel - exactly the 5 things requested
@@ -147,7 +128,6 @@ def index():
             products=products,
             club_type=club_type,
             total_count=total_count,
-            use_new_architecture=use_new_architecture,
             applied_filters=applied_filters,
             next_page_url=next_page_url,
             no_results=no_results,
@@ -169,7 +149,6 @@ def index():
             products=stored.get('products', []),
             club_type=stored.get('club_type', "Driver"),
             total_count=stored.get('total_count'),
-            use_new_architecture=stored.get('use_new_architecture', False),
             applied_filters=stored.get('applied_filters', []),
             next_page_url=stored.get('next_page_url'),
             no_results=stored.get('no_results', False),
@@ -185,7 +164,6 @@ def index():
         products=products,
         club_type=club_type,
         total_count=total_count,
-        use_new_architecture=use_new_architecture,
         applied_filters=applied_filters,
         next_page_url=next_page_url,
         no_results=no_results,
@@ -203,7 +181,6 @@ def search_with_url():
         url = data.get("url")
         club_type = data.get("club_type", "Driver")
         user_query = data.get("user_query", "")
-        use_new_architecture = data.get("use_new_architecture", False)
         
         if not url:
             return jsonify({"error": "No URL provided"}), 400
@@ -232,7 +209,6 @@ def search_with_url():
             products=products,
             club_type=club_type,
             total_count=total_count,
-            use_new_architecture=use_new_architecture,
             applied_filters=applied_filters,
             next_page_url=next_page_url,
             no_results=no_results,
