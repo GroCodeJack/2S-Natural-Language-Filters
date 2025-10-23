@@ -1583,34 +1583,25 @@
     {% endif %}
 </div>
 
-<!-- Mixpanel Session Replay -->
-<script src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js" async></script>
+<!-- Mixpanel Session Replay: official stub + init -->
 <script>
-  (function initMixpanelReplay(){
+  (function(f,b){if(!b.__SV){var a,e,i,g;window.mixpanel=b;b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_session_recording stop_session_recording get_session_recording_properties get_session_replay_url".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2;a=f.createElement("script");a.type="text/javascript";a.async=!0;a.src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";e=f.getElementsByTagName("script")[0];e.parentNode.insertBefore(a,e)}})(document,window.mixpanel||[]);
+</script>
+<script>
+  (function(){
     var token = "{{ mixpanel_token or '' }}";
     if (!token) return; // No token configured
-    function tryInit(){
-      if (!(window.mixpanel && typeof window.mixpanel.init === 'function')) {
-        return setTimeout(tryInit, 60);
-      }
-      try {
-        mixpanel.init(token, {
-          record_sessions_percent: 100,
-          // Optional: enable heatmap clicks during active replays
-          // record_heatmap_data: true,
-        });
-        // Expose helpers for debugging if needed
-        window.getMixpanelReplayProps = function(){
-          try { return mixpanel.get_session_recording_properties(); } catch (e) { return {}; }
-        };
-        window.getMixpanelReplayUrl = function(){
-          try { return mixpanel.get_session_replay_url && mixpanel.get_session_replay_url(); } catch (e) { return null; }
-        };
-      } catch (e) {
-        console.warn('Mixpanel init failed:', e);
-      }
-    }
-    tryInit();
+    mixpanel.init(token, {
+      record_sessions_percent: 100
+      // record_heatmap_data: true, // optional
+    });
+    // Debug helpers
+    window.getMixpanelReplayProps = function(){
+      try { return mixpanel.get_session_recording_properties(); } catch (e) { return {}; }
+    };
+    window.getMixpanelReplayUrl = function(){
+      try { return mixpanel.get_session_replay_url && mixpanel.get_session_replay_url(); } catch (e) { return null; }
+    };
   })();
 </script>
 
