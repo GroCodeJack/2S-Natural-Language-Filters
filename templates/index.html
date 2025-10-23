@@ -1582,5 +1582,37 @@
         </div>
     {% endif %}
 </div>
+
+<!-- Mixpanel Session Replay -->
+<script src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js" async></script>
+<script>
+  (function initMixpanelReplay(){
+    var token = "{{ mixpanel_token or '' }}";
+    if (!token) return; // No token configured
+    function tryInit(){
+      if (!(window.mixpanel && typeof window.mixpanel.init === 'function')) {
+        return setTimeout(tryInit, 60);
+      }
+      try {
+        mixpanel.init(token, {
+          record_sessions_percent: 100,
+          // Optional: enable heatmap clicks during active replays
+          // record_heatmap_data: true,
+        });
+        // Expose helpers for debugging if needed
+        window.getMixpanelReplayProps = function(){
+          try { return mixpanel.get_session_recording_properties(); } catch (e) { return {}; }
+        };
+        window.getMixpanelReplayUrl = function(){
+          try { return mixpanel.get_session_replay_url && mixpanel.get_session_replay_url(); } catch (e) { return null; }
+        };
+      } catch (e) {
+        console.warn('Mixpanel init failed:', e);
+      }
+    }
+    tryInit();
+  })();
+</script>
+
 </body>
 </html>
