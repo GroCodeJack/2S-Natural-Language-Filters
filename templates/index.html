@@ -1592,7 +1592,8 @@
     var token = "{{ mixpanel_token or '' }}";
     if (!token) return; // No token configured
     mixpanel.init(token, {
-      record_sessions_percent: 100
+      record_sessions_percent: 100,
+      record_mask_text_selector: ''
       // record_heatmap_data: true, // optional
     });
     // Debug helpers
