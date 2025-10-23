@@ -264,6 +264,11 @@
                 width: 20px;
                 height: 20px;
             }
+            
+            /* Make the header 20% larger on mobile */
+            .hero-title {
+                font-size: clamp(1.92rem, 4.8vw, 65.28px);
+            }
         }
 
         /* ---------- PRODUCT GRID ---------- */
@@ -316,6 +321,11 @@
             max-height: 160px;
             object-fit: contain;
             margin-bottom: 0.5em;
+        }
+
+        /* Uppercase model names */
+        .tile h3 {
+            text-transform: uppercase;
         }
 
         .price-text {
@@ -1054,7 +1064,27 @@
                     <img src="${product.img_url}" alt="Product Image">
                     <h3>${product.brand} ${product.model}</h3>
                     ${product.parent_model ? 
-                        '<div class="attr"><p>PARENT MODEL</p></div>' : 
+                        `
+                        <div class="parent-model-pricing">
+                            ${product.new_price && product.new_url ? `
+                                <a href="${product.new_url}" target="_blank" class="pricing-option new-pricing">
+                                    <span class="condition-label">NEW</span>
+                                    <div class="price-section">
+                                        <span class="price">${product.new_price}</span>
+                                    </div>
+                                </a>
+                            ` : ''}
+                            ${product.used_price && product.used_url ? `
+                                <a href="${product.used_url}" target="_blank" class="pricing-option used-pricing">
+                                    <span class="condition-label">USED</span>
+                                    <div class="price-section">
+                                        <span class="starting-at">Starting at</span>
+                                        <span class="price">${product.used_price}</span>
+                                    </div>
+                                </a>
+                            ` : ''}
+                        </div>
+                        ` : 
                         `<div class="price-text">${product.price}</div>
                          <div class="attr">
                              <p>Condition: ${product.condition}</p>
@@ -1448,7 +1478,7 @@
                 <a class="view-button" href="{{ generated_url }}" target="_blank" rel="noopener noreferrer">
                     <!-- External link icon -->
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"></path><path d="M5 5h6V3H3v8h2V5zm14 14h-6v2h8v-8h-2v6z"></path></svg>
-                    <span>View on 2ndSwing.com</span>
+                    <span>View listing page</span>
                 </a>
             </div>
             {% if applied_filters and applied_filters|length > 0 %}
