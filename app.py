@@ -60,7 +60,7 @@ def index():
     # Track page view for all requests
     if os.environ.get("MIXPANEL_TOKEN"):
         mp = mixpanel.Mixpanel(os.environ.get("MIXPANEL_TOKEN"))
-        mp.track(request.remote_addr, 'Page View', {
+        mp.track(get_remote_address(), 'Page View', {
             'page': 'home',
             'method': request.method,
             'user_agent': request.headers.get('User-Agent', ''),
@@ -117,7 +117,7 @@ def index():
         # Track search with Mixpanel - exactly the 5 things requested
         if os.environ.get("MIXPANEL_TOKEN"):
             mp = mixpanel.Mixpanel(os.environ.get("MIXPANEL_TOKEN"))
-            mp.track(request.remote_addr, 'Search Performed', {
+            mp.track(get_remote_address(), 'Search Performed', {
                 'club_type': club_type,                    # a) club type
                 'user_query': user_query,                  # b) user's search query  
                 'generated_url': generated_url,            # c) URL that's generated
@@ -198,7 +198,7 @@ def search_with_url():
         # Track search with Mixpanel
         if os.environ.get("MIXPANEL_TOKEN"):
             mp = mixpanel.Mixpanel(os.environ.get("MIXPANEL_TOKEN"))
-            mp.track(request.remote_addr, 'Search Performed', {
+            mp.track(get_remote_address(), 'Search Performed', {
                 'club_type': club_type,
                 'user_query': user_query + " (filter removed)",
                 'generated_url': url,
