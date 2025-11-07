@@ -137,7 +137,8 @@ def index():
             next_page_url=next_page_url,
             no_results=no_results,
             VISIBLE_ATTRS=VISIBLE_ATTRS,
-            placeholders_json=json.dumps(PLACEHOLDERS)
+            placeholders_json=json.dumps(PLACEHOLDERS),
+            mixpanel_token=os.environ.get("MIXPANEL_TOKEN")
         )
 
     # For GET requests, if we have a result id from previous POST, render once then clear
@@ -173,7 +174,8 @@ def index():
         next_page_url=next_page_url,
         no_results=no_results,
         VISIBLE_ATTRS=VISIBLE_ATTRS,
-        placeholders_json=json.dumps(PLACEHOLDERS)
+        placeholders_json=json.dumps(PLACEHOLDERS),
+        mixpanel_token=os.environ.get("MIXPANEL_TOKEN")
     )
 
 

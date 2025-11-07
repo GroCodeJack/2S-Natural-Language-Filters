@@ -79,7 +79,12 @@ def scrape_2ndswing(url: str):
             link_tag = card.select_one("a.product.photo.product-item-photo")
             product_url = link_tag["href"] if link_tag else ""
 
-            parent_model = card.get("data-itemhasused") == "1" and card.get("data-hasnewvariants") == "1"
+            # Determine if this is a parent model card. Previously we required BOTH used and new variants.
+            # Some parent tiles (e.g., Pre-order) may only have NEW variants. Treat those as parent models too.
+            has_used_variants = card.get("data-itemhasused") == "1"
+            has_new_variants = card.get("data-hasnewvariants") == "1"
+            has_variant_links = bool(card.find_all("a", class_="new-used-listing-link"))
+            parent_model = bool(has_new_variants or (has_used_variants and has_new_variants) or has_variant_links)
 
             # Capture ALL attrs dynamically
             attrs = {}
@@ -107,14 +112,26 @@ def scrape_2ndswing(url: str):
                 new_used_links = card.find_all("a", class_="new-used-listing-link")
                 for link in new_used_links:
                     href = link.get("href", "")
-                    price_span = link.find("span", class_="price")
-                    
-                    if "new_used_filter=New" in href and price_span:
+                    price_span = link.find("span", class_="price") or link.find("span", class_="old-price")
+                    label_text = link.get_text(" ", strip=True).lower()
+
+                    is_new = ("new_used_filter=New" in href) or ("new" in label_text and "used" not in label_text)
+                    is_used = ("new_used_filter=Used" in href) or ("used" in label_text)
+
+                    if is_new and price_span:
                         new_price = price_span.get_text(strip=True)
                         new_url = href
-                    elif "new_used_filter=Used" in href and price_span:
+                    elif is_used and price_span:
                         used_price = price_span.get_text(strip=True)
                         used_url = href
+
+                # Fallbacks: some Pre-order tiles may not use the standard link structure
+                if not new_price:
+                    # Try to read a visible current price within the card as NEW price
+                    price_div = card.find("div", class_="current-price") or card.find("span", class_="price")
+                    if price_div:
+                        new_price = price_div.get_text(strip=True)
+                        new_url = product_url  # fall back to product page
 
             all_data.append({
                 "brand": brand,

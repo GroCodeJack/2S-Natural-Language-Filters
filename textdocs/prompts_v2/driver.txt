@@ -26,7 +26,7 @@ Filters (map natural language to query params):
 - Loft → g2_club_loft (e.g., 10.5°)
 - Shaft flex → g2_shaft_flex (Ladies | Senior | Regular | Stiff | X-Stiff)
 - Desired ball flight → g2_club_desiredballflight (e.g., High+MOI, Draw+Bias, Low+Spin+%2F+Fade, Neutral)
-- Condition → g2_condition (New | Mint+9.5 | Above+average+9.0 | Average+8.0 | Below+average+7.0)
+- Condition → g2_condition (New | Mint+9.5 | Above+Average+9.0 | Average+8.0 | Below+Average+7.0)
 - New/Used → new_used_filter (New | Used)
 - Location → g2_locations (Scottsdale+%28S%29 | Dallas | Minnetonka | Columbia | Hub | Minneapolis | Wilmington)
 - Price range → price (low-high),

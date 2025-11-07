@@ -263,6 +263,11 @@
                 width: 20px;
                 height: 20px;
             }
+            
+            /* Make the header 20% larger on mobile */
+            .hero-title {
+                font-size: clamp(1.92rem, 4.8vw, 65.28px);
+            }
         }
 
         /* ---------- PRODUCT GRID ---------- */
@@ -315,6 +320,11 @@
             max-height: 160px;
             object-fit: contain;
             margin-bottom: 0.5em;
+        }
+
+        /* Uppercase model names */
+        .tile h3 {
+            text-transform: uppercase;
         }
 
         .price-text {
@@ -1053,7 +1063,27 @@
                     <img src="${product.img_url}" alt="Product Image">
                     <h3>${product.brand} ${product.model}</h3>
                     ${product.parent_model ? 
-                        '<div class="attr"><p>PARENT MODEL</p></div>' : 
+                        `
+                        <div class="parent-model-pricing">
+                            ${product.new_price && product.new_url ? `
+                                <a href="${product.new_url}" target="_blank" class="pricing-option new-pricing">
+                                    <span class="condition-label">NEW</span>
+                                    <div class="price-section">
+                                        <span class="price">${product.new_price}</span>
+                                    </div>
+                                </a>
+                            ` : ''}
+                            ${product.used_price && product.used_url ? `
+                                <a href="${product.used_url}" target="_blank" class="pricing-option used-pricing">
+                                    <span class="condition-label">USED</span>
+                                    <div class="price-section">
+                                        <span class="starting-at">Starting at</span>
+                                        <span class="price">${product.used_price}</span>
+                                    </div>
+                                </a>
+                            ` : ''}
+                        </div>
+                        ` : 
                         `<div class="price-text">${product.price}</div>
                          <div class="attr">
                              <p>Condition: ${product.condition}</p>
@@ -1447,7 +1477,7 @@
                 <a class="view-button" href="{{ generated_url }}" target="_blank" rel="noopener noreferrer">
                     <!-- External link icon -->
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"></path><path d="M5 5h6V3H3v8h2V5zm14 14h-6v2h8v-8h-2v6z"></path></svg>
-                    <span>View on 2ndSwing.com</span>
+                    <span>View listing page</span>
                 </a>
             </div>
             {% if applied_filters and applied_filters|length > 0 %}
@@ -1551,5 +1581,29 @@
         </div>
     {% endif %}
 </div>
+
+<!-- Mixpanel Session Replay: official stub + init -->
+<script>
+  (function(f,b){if(!b.__SV){var a,e,i,g;window.mixpanel=b;b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_session_recording stop_session_recording get_session_recording_properties get_session_replay_url".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2;a=f.createElement("script");a.type="text/javascript";a.async=!0;a.src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";e=f.getElementsByTagName("script")[0];e.parentNode.insertBefore(a,e)}})(document,window.mixpanel||[]);
+</script>
+<script>
+  (function(){
+    var token = "{{ mixpanel_token or '' }}";
+    if (!token) return; // No token configured
+    mixpanel.init(token, {
+      record_sessions_percent: 100,
+      record_mask_text_selector: ''
+      // record_heatmap_data: true, // optional
+    });
+    // Debug helpers
+    window.getMixpanelReplayProps = function(){
+      try { return mixpanel.get_session_recording_properties(); } catch (e) { return {}; }
+    };
+    window.getMixpanelReplayUrl = function(){
+      try { return mixpanel.get_session_replay_url && mixpanel.get_session_replay_url(); } catch (e) { return null; }
+    };
+  })();
+</script>
+
 </body>
 </html>
