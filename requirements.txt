@@ -6,3 +6,5 @@ gunicorn
 flask-limiter
 mixpanel
 redis
+python-dotenv
+
