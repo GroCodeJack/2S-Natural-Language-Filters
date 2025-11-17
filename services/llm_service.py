@@ -1,13 +1,45 @@
 import os
 from urllib.parse import quote_plus
 from openai import OpenAI
-from config import OPENAI_MODEL, MODEL_DATA_FILES, DEBUG_DUMP_SYSTEM_PROMPT
+from config import OPENAI_MODEL, MODEL_DATA_FILES, DEBUG_DUMP_SYSTEM_PROMPT, CLASSIFICATION_MODEL, EXTRACTION_MODEL, URL_BUILDING_MODEL
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-def classify_query_is_model_specific(user_query: str) -> bool:
-    """Return True if the query references explicit club models."""
+CLUB_TYPE_KEYWORDS = {
+    "Driver": ["driver", "drivers", "drive"],
+    "Fairway Woods": [
+        "fairway", "fairways", "wood", "woods",
+        "3w", "4w", "5w", "6w", "7w", "8w", "9w", "10w", "11w",
+    ],
+    "Hybrids": ["hybrid", "hybrids"],
+    "Iron Sets": ["irons", "ironset", "ironsets"],
+    "Single Irons": [
+        "single iron", "single irons",
+        "1 iron", "1 irons",
+        "2 iron", "2 irons",
+        "3 iron", "3 irons",
+        "4 iron", "4 irons",
+        "5 iron", "5 irons",
+        "6 iron", "6 irons",
+        "7 iron", "7 irons",
+        "8 iron", "8 irons",
+        "9 iron", "9 irons",
+    ],
+    "Wedges": ["wedge", "wedges", "gw", "pw", "aw", "lw", "sw"],
+    "Putters": ["putter", "putters", "mallet", "putt", "scotty", "putting"],
+}
+
+def classify_query_is_model_specific(user_query: str, selected_club_type: str) -> dict:
+    """Return dict with model-specific classification and club type mismatch detection.
+    
+    Returns:
+        {
+            "is_model_specific": bool,
+            "potential_clubtype_mismatch": bool,
+            "intended_club_type": str or None
+        }
+    """
     try:
         with open(os.path.join("textdocs", "brandlist.txt"), encoding="utf‑8") as f:
             brand_list = f.read().strip()
@@ -15,20 +47,17 @@ def classify_query_is_model_specific(user_query: str) -> bool:
         print("Error reading brandlist.txt:", e)
         brand_list = ""
 
-    examples = (
-        "EXAMPLES – respond ONLY with 1 or 0\n"
-        'User: "ping irons"                  → 0\n'
-        'User: "titleist drivers"            → 0\n'
-        'User: "ping g430 driver"            → 1\n'
-        'User: "taylormade spider putters"   → 1\n'
-        'User: "mizuno jpx 923 forged"       → 1'
-    )
-
     system_prompt = (
-        "You are the first step in a natural‑language golf‑search tool. "
-        "Reply with '1' if the query is model‑specific or '0' if generic. "
-        "Never output anything except '1' or '0'.\n\n" + examples + "\n\n" +
-        "These names are BRANDS, not models – do *not* treat them as models:\n" + brand_list
+        "You are the first step in a natural-language golf-search tool. "
+        "Reply with '1' if the query is model-specific or '0' if generic. "
+        "Never output anything except '1' or '0'.\n\n"
+        "EXAMPLES  respond ONLY with 1 or 0\n"
+        'User: "ping irons"                   0\n'
+        'User: "titleist drivers"             0\n'
+        'User: "ping g430 driver"             1\n'
+        'User: "taylormade spider putters"    1\n'
+        'User: "mizuno jpx 923 forged"        1\n\n'
+        "These names are BRANDS, not models  do *not* treat them as models:\n" + brand_list
     )
 
     # Debug: dump classification system prompt if enabled
@@ -37,13 +66,14 @@ def classify_query_is_model_specific(user_query: str) -> bool:
         print("CLASSIFICATION SYSTEM PROMPT DEBUG DUMP")
         print("="*80)
         print(f"User Query: {user_query}")
+        print(f"Selected Club Type: {selected_club_type}")
         print("-"*80)
         print(system_prompt)
         print("="*80 + "\n")
 
     try:
         resp = client.chat.completions.create(
-            model=OPENAI_MODEL,
+            model=CLASSIFICATION_MODEL,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query},
@@ -53,10 +83,36 @@ def classify_query_is_model_specific(user_query: str) -> bool:
         )
         result = resp.choices[0].message.content.lstrip()[:1]
         print(f"[DEBUG] classification result: {result}")
-        return result == "1"
+        is_model_specific = result == "1"
     except Exception as e:
         print("OpenAI classification error:", e)
-        return False
+        is_model_specific = False
+
+    # Pure-Python club type mismatch detection using keyword map
+    query_lc = user_query.lower()
+    selected_keywords = CLUB_TYPE_KEYWORDS.get(selected_club_type, [])
+    mentioned_types = []
+    for ctype, keywords in CLUB_TYPE_KEYWORDS.items():
+        for kw in keywords:
+            if kw in query_lc:
+                mentioned_types.append(ctype)
+                break
+
+    potential_clubtype_mismatch = False
+    intended_club_type = None
+
+    # If the query clearly mentions a different club type than selected
+    for ctype in mentioned_types:
+        if ctype != selected_club_type:
+            potential_clubtype_mismatch = True
+            intended_club_type = ctype
+            break
+
+    return {
+        "is_model_specific": is_model_specific,
+        "potential_clubtype_mismatch": potential_clubtype_mismatch,
+        "intended_club_type": intended_club_type,
+    }
 
 def extract_and_map_models(user_query: str, club_type: str) -> str:
     """Return comma‑separated pairs userReference=OfficialName (≤7)."""
@@ -76,7 +132,7 @@ List of official models:
 """
     try:
         resp = client.chat.completions.create(
-            model=OPENAI_MODEL,
+            model=EXTRACTION_MODEL,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query},
@@ -110,7 +166,7 @@ def build_url_with_llm(user_query: str, system_prompt: str, mapped_models: str) 
 
     try:
         resp = client.chat.completions.create(
-            model=OPENAI_MODEL,
+            model=URL_BUILDING_MODEL,
             messages=[
                 {"role": "system", "content": llm_prompt},
                 {"role": "user", "content": user_query},

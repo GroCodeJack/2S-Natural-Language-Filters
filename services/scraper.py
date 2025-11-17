@@ -12,10 +12,32 @@ def scrape_2ndswing(url: str):
         next_page_url = None
         no_results = False
         
-        # Check for no results message first
+        # Check for no results message - two different selectors depending on search type
+        # Filter-based no results (div.message.info.empty)
         no_results_element = soup.select_one('div.message.info.empty')
         if no_results_element and "We can't find products matching the selection" in no_results_element.get_text():
             no_results = True
+        
+        # Search-based no results (q= parameter) - different selector
+        search_no_results = soup.select_one('#maincontent > div.columns > div.column.main > div.message.notice')
+        if search_no_results:
+            no_results = True
+        
+        # If no results found, still capture filters but skip scraping product tiles
+        if no_results:
+            # Capture applied filters even with no results
+            for li in soup.select('ol.items li.item'):
+                label_el = li.select_one('.filter-label')
+                value_el = li.select_one('.filter-value')
+                if label_el and value_el:
+                    label = label_el.get_text(strip=True)
+                    value = value_el.get_text(strip=True)
+                    if label and value:
+                        applied_filters.append({
+                            "label": label,
+                            "value": value,
+                        })
+            return [], None, applied_filters, None, True
         
         # Capture total count
         count_tag = soup.select_one('p.toolbar-amount span.toolbar-number:last-child')

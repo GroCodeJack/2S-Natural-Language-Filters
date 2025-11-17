@@ -81,8 +81,11 @@ def index():
         user_query = request.form.get("user_query", "")
         club_type = request.form.get("club_type", "Driver")
 
-        # Check if query is model-specific
-        is_model_specific = classify_query_is_model_specific(user_query)
+        # Check if query is model-specific and detect club type mismatch
+        classification = classify_query_is_model_specific(user_query, club_type)
+        is_model_specific = classification["is_model_specific"]
+        potential_clubtype_mismatch = classification["potential_clubtype_mismatch"]
+        intended_club_type = classification["intended_club_type"]
 
         # Load system prompt for the club type from prompts_v2
         prompt_path = os.path.join("textdocs", "prompts_v2", CLUB_PROMPT_FILES.get(club_type, "driver.txt"))
@@ -136,6 +139,8 @@ def index():
             applied_filters=applied_filters,
             next_page_url=next_page_url,
             no_results=no_results,
+            potential_clubtype_mismatch=potential_clubtype_mismatch,
+            intended_club_type=intended_club_type,
             VISIBLE_ATTRS=VISIBLE_ATTRS,
             placeholders_json=json.dumps(PLACEHOLDERS),
             mixpanel_token=os.environ.get("MIXPANEL_TOKEN")

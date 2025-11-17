@@ -10,7 +10,12 @@ FLASK_DEBUG = True
 RATE_LIMIT = "350 per hour"
 
 # OpenAI Configuration
-OPENAI_MODEL = "gpt-4.1"
+OPENAI_MODEL = "gpt-4.1"  # Default model
+
+# Model configuration for specific LLM steps
+CLASSIFICATION_MODEL = "gpt-4.1"  # Fast model for classification (model-specific + club type mismatch)
+EXTRACTION_MODEL = "gpt-4.1"  # Model for extracting/mapping model names
+URL_BUILDING_MODEL = "gpt-4.1"  # Model for building search URLs
 
 # Debug Configuration
 DEBUG_DUMP_SYSTEM_PROMPT = True  # Set to False to disable system prompt logging

@@ -905,6 +905,123 @@
                 font-size: 0.9rem;
             }
         }
+
+        /* ---------- CLUB TYPE MISMATCH ALERT ---------- */
+        .mismatch-alert {
+            max-width: var(--container-max);
+            width: 100%;
+            margin: 1rem auto;
+            padding: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mismatch-alert-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mismatch-alert-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: #b71c1c;
+            fill: none;
+        }
+
+        .mismatch-alert-content {
+            flex: 1;
+        }
+
+        .mismatch-alert-message {
+            margin: 0 0 0.75rem 0;
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .mismatch-alert-message strong {
+            color: #b71c1c;
+            font-weight: 600;
+        }
+
+        .mismatch-alert-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .mismatch-btn {
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mismatch-btn-yes {
+            background: #b71c1c;
+            color: white;
+            box-shadow: 0 2px 6px rgba(183, 28, 28, 0.3);
+        }
+
+        .mismatch-btn-yes:hover {
+            background: #8f1616;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(183, 28, 28, 0.4);
+        }
+
+        .mismatch-btn-no {
+            background: white;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+
+        .mismatch-btn-no:hover {
+            background: #f5f5f5;
+            color: #333;
+            border-color: #bbb;
+        }
+
+        @media (max-width: 768px) {
+            .mismatch-alert {
+                flex-direction: column;
+                text-align: center;
+                padding: 1rem;
+            }
+
+            .mismatch-alert-buttons {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .mismatch-btn {
+                flex: 1;
+                min-width: 100px;
+                justify-content: center;
+            }
+        }
     </style>
 
     <script>
@@ -1452,6 +1569,67 @@
                 </div>
             </form>
         </header>
+
+        <!-- ---------- CLUB TYPE MISMATCH ALERT ---------- -->
+        {% if potential_clubtype_mismatch and intended_club_type %}
+        <div class="mismatch-alert" id="mismatch-alert">
+            <div class="mismatch-alert-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 20h20L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="mismatch-alert-content">
+                <p class="mismatch-alert-message">
+                    It looks like you were looking for <strong>{{ intended_club_type }}</strong> but you had <strong>{{ club_type }}</strong> selected. Would you like to search again using <strong>{{ intended_club_type }}</strong>?
+                </p>
+                <div class="mismatch-alert-buttons">
+                    <button class="mismatch-btn mismatch-btn-yes" onclick="retryWithCorrectClubType()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Yes, search with {{ intended_club_type }}
+                    </button>
+                    <button class="mismatch-btn mismatch-btn-no" onclick="dismissMismatchAlert()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        No, keep current results
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            function retryWithCorrectClubType() {
+                // Get the form and update the club type
+                const form = document.querySelector('form[method="POST"]');
+                const clubTypeDropdown = document.getElementById('club_type');
+                const intendedClubType = '{{ intended_club_type }}';
+                
+                // Update the dropdown value
+                clubTypeDropdown.value = intendedClubType;
+                
+                // Show spinner
+                showSpinner();
+                
+                // Submit the form
+                form.submit();
+            }
+            
+            function dismissMismatchAlert() {
+                const alert = document.getElementById('mismatch-alert');
+                alert.style.animation = 'slideUp 0.3s ease-out';
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-20px)';
+                
+                setTimeout(() => {
+                    alert.remove();
+                }, 300);
+            }
+        </script>
+        {% endif %}
 
         <div class="skeleton-cta" aria-hidden="true">
             <div class="skeleton-cta-content">
