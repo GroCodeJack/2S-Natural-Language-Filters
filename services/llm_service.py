@@ -15,7 +15,7 @@ CLUB_TYPE_KEYWORDS = {
     "Hybrids": ["hybrid", "hybrids"],
     "Iron Sets": ["irons", "ironset", "ironsets"],
     "Single Irons": [
-        "single iron", "single irons",
+        "iron", "single iron", "single irons",
         "1 iron", "1 irons",
         "2 iron", "2 irons",
         "3 iron", "3 irons",
@@ -27,6 +27,7 @@ CLUB_TYPE_KEYWORDS = {
         "9 iron", "9 irons",
     ],
     "Wedges": ["wedge", "wedges", "gw", "pw", "aw", "lw", "sw"],
+    "Utility Irons": ["utility", "udi", "crossover"],
     "Putters": ["putter", "putters", "mallet", "putt", "scotty", "putting"],
 }
 
@@ -89,24 +90,29 @@ def classify_query_is_model_specific(user_query: str, selected_club_type: str) -
         is_model_specific = False
 
     # Pure-Python club type mismatch detection using keyword map
-    query_lc = user_query.lower()
-    selected_keywords = CLUB_TYPE_KEYWORDS.get(selected_club_type, [])
-    mentioned_types = []
-    for ctype, keywords in CLUB_TYPE_KEYWORDS.items():
-        for kw in keywords:
-            if kw in query_lc:
-                mentioned_types.append(ctype)
-                break
-
+    # NOTE: We explicitly ignore Utility Irons entirely in mismatch logic to avoid confusion.
     potential_clubtype_mismatch = False
     intended_club_type = None
+    
+    # Skip mismatch detection entirely if Utility Irons is selected
+    if selected_club_type != "Utility Irons":
+        query_lc = user_query.lower()
+        selected_keywords = CLUB_TYPE_KEYWORDS.get(selected_club_type, [])
+        mentioned_types = []
+        for ctype, keywords in CLUB_TYPE_KEYWORDS.items():
+            if ctype == "Utility Irons":
+                continue  # do not use Utility Irons for mismatch detection
+            for kw in keywords:
+                if kw in query_lc:
+                    mentioned_types.append(ctype)
+                    break
 
-    # If the query clearly mentions a different club type than selected
-    for ctype in mentioned_types:
-        if ctype != selected_club_type:
-            potential_clubtype_mismatch = True
-            intended_club_type = ctype
-            break
+        # If the query clearly mentions a different club type than selected
+        for ctype in mentioned_types:
+            if ctype != selected_club_type:
+                potential_clubtype_mismatch = True
+                intended_club_type = ctype
+                break
 
     return {
         "is_model_specific": is_model_specific,

@@ -29,6 +29,7 @@ CLUB_PROMPT_FILES = {
     "Wedges": "wedge.txt",
     "Putters": "putter.txt",
     "Single Irons": "singleiron.txt",
+    "Utility Irons": "utility.txt",
 }
 
 # Model data file mapping
@@ -40,6 +41,7 @@ MODEL_DATA_FILES = {
     "Wedges": "wedges.txt",
     "Putters": "putters.txt",
     "Single Irons": "singleirons.txt",
+    "Utility Irons": "utility.txt",
 }
 
 # Visible attributes for each club type
@@ -50,6 +52,7 @@ VISIBLE_ATTRS = {
     "Iron Sets":     ["dexterity", "makeup", "material", "flex", "shaft"],
     "Wedges":        ["dexterity", "type", "loft", "bounce", "flex", "shaft"],
     "Single Irons":  ["dexterity", "type", "material", "flex", "shaft"],
+    "Utility Irons": ["dexterity", "type", "loft", "flex", "shaft"],
     "Putters":       ["dexterity", "length"],
 }
 
