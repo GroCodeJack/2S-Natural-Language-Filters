@@ -24,6 +24,7 @@ Filters (map natural language to query params):
 - Brand → g2_brand (e.g., Ping, TaylorMade, Titleist)
 - Dexterity → g2_dexterity (Left+Handed | Right+Handed)
 - Loft → g2_club_loft (e.g., 15%C2%B0, 16.5%C2%B0, 18%C2%B0, 19%C2%B0)
+- Length → g2_club_length (e.g., 41.5in, 42.0in, 42.5in)
 - Shaft flex → g2_shaft_flex (Ladies | Senior | Regular | Stiff | X-Stiff)
 - Desired ball flight → g2_club_desiredballflight (High+MOI | Draw+Bias | Low+Spin+%2F+Fade | Neutral)
 - Shaft material → g2_club_shaftmatl (Graphite | Steel)

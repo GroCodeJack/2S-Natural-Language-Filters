@@ -21,9 +21,10 @@ B) If CLASSIFICATION is GENERIC
 - Append filter parameters as needed (see Filters).
 
 Filters (map natural language to query params):
-- Brand → g2_brand
+- Brand → g2_brand (e.g., Ping, TaylorMade, Titleist)
 - Dexterity → g2_dexterity (Left+Handed | Right+Handed)
 - Loft → g2_club_loft (e.g., 19%C2%B0, 21%C2%B0, 22%C2%B0, 23%C2%B0)
+- Length → g2_club_length (e.g., 39.0in, 39.5in, 40.0in, 40.5in)
 - Shaft flex → g2_shaft_flex (Ladies | Senior | Regular | Stiff | X-Stiff)
 - Desired ball flight → g2_club_desiredballflight (High+MOI | Draw+Bias | Low+Spin+%2F+Fade | Neutral)
 - Shaft material → g2_club_shaftmatl (Graphite | Steel)
