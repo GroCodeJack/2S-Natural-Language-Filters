@@ -21,7 +21,7 @@ B) If CLASSIFICATION is GENERIC
 - Append filter parameters as needed (see Filters).
 
 Filters (map natural language to query params):
-- Brand → g2_brand (including Titleist+Scotty+Cameron)
+- Brand → g2_brand (including Titleist+Scotty+Cameron, L.A.B. Golf)
 - Dexterity → g2_dexterity (Left+Handed | Right+Handed)
 - Club length → g2_club_length (e.g., 28.5in, 30.5in, 33.0in, 34.0in, 35.0in, 37.0in)
 - Putter head style → g2_club_putterheadstyle (Blade | Mallet)
