@@ -49,6 +49,7 @@ Heuristics:
 
 Encoding:
 - URL-encode all values. Use + for spaces, %C2%B0 for the degree symbol (°), etc.
+- Multi-value filters MUST use bracket indexing: param%5B0%5D=First&param%5B1%5D=Second (never repeat bare param=).
 
 Reference utility-iron filter example (for structure only):
 https://www.2ndswing.com/golf-clubs/utility-iron?g2_brand%5B0%5D=Callaway&g2_brand%5B1%5D=Cobra&g2_brand%5B2%5D=Mizuno&g2_brand%5B3%5D=Ping&g2_brand%5B4%5D=TaylorMade&g2_brand%5B5%5D=Titleist&g2_club_length%5B0%5D=36.0in&g2_club_length%5B1%5D=37.0in&g2_club_length%5B2%5D=37.25in&g2_club_loft%5B0%5D=18%C2%B0&g2_club_loft%5B1%5D=20%C2%B0&g2_club_loft%5B2%5D=22%C2%B0&g2_club_loft%5B3%5D=23%C2%B0&g2_dexterity%5B0%5D=Left+Handed&g2_dexterity%5B1%5D=Right+Handed&g2_locations%5B0%5D=Columbia&g2_locations%5B1%5D=Dallas&g2_locations%5B2%5D=Hub&g2_locations%5B3%5D=Minneapolis&g2_locations%5B4%5D=Minnetonka&g2_locations%5B5%5D=Scottsdale+%28S%29&g2_locations%5B6%5D=Wilmington&g2_shaft_flex%5B0%5D=Ladies&g2_shaft_flex%5B1%5D=Regular&g2_shaft_flex%5B2%5D=Senior&g2_shaft_flex%5B3%5D=Stiff&g2_shaft_flex%5B4%5D=Tour+X-Stiff&g2_shaft_flex%5B5%5D=X-Stiff&g2_subcategory%5B0%5D=2+Iron&g2_subcategory%5B1%5D=3+Iron&g2_subcategory%5B2%5D=3+Utility&g2_subcategory%5B3%5D=4+Utility&g2_subcategory%5B4%5D=5+Utility&new_used_filter%5B0%5D=New&new_used_filter%5B1%5D=Used&price=125-400
